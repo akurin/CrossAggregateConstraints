@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using CrossAggregateConstraints.Application;
 using CrossAggregateConstraints.Domain;
-using CrossAggregateConstraints.Ports.Costraints;
+using CrossAggregateConstraints.Ports.Constraints;
 using CrossAggregateConstraints.Ports.Persistance;
 using CrossAggregateConstraints.Ports.Persistance.EventDispatching;
 using CrossAggregateConstraints.Ports.Persistance.Repositories;

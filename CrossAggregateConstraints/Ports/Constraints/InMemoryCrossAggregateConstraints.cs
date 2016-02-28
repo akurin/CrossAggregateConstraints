@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using CrossAggregateConstraints.Domain;
 
-namespace CrossAggregateConstraints.Ports.Costraints
+namespace CrossAggregateConstraints.Ports.Constraints
 {
     public sealed class InMemoryCrossAggregateConstraints : ICrossAggregateConstraints
     {

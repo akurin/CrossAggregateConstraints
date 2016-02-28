@@ -1,6 +1,6 @@
 ﻿using System;
 using CrossAggregateConstraints.Domain;
-using CrossAggregateConstraints.Ports.Costraints;
+using CrossAggregateConstraints.Ports.Constraints;
 using NSpec;
 
 namespace CrossAggregateConstraints.Tests.Ports.Constraints

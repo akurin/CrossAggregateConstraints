@@ -79,7 +79,7 @@
     <Compile Include="Ports\Persistance\IEventSerializer.cs" />
     <Compile Include="Ports\Persistance\EventDispatching\UserRegistrtionProcessManagerEventHandler.cs" />
     <Compile Include="Ports\Persistance\Repositories\UserRepository.cs" />
-    <Compile Include="Ports\Costraints\InMemoryCrossAggregateConstraints.cs" />
+    <Compile Include="Ports\Constraints\InMemoryCrossAggregateConstraints.cs" />
     <Compile Include="Infrastructure\EventSourcing\IEvent.cs" />
     <Compile Include="Infrastructure\EventSourcing\IEventSourced.cs" />
     <Compile Include="Domain\User.cs" />
