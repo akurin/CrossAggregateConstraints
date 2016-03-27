@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using CrossAggregateConstraints.Infrastructure.EventSourcing;
+using CrossAggregateConstraints.Domain;
 
 namespace CrossAggregateConstraints.Ports.Persistance.EventHandling
 {

@@ -2,7 +2,7 @@
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
-using CrossAggregateConstraints.Infrastructure.EventSourcing;
+using CrossAggregateConstraints.Domain;
 using EventStore.ClientAPI;
 
 namespace CrossAggregateConstraints.Ports.Persistance.EventHandling
@@ -22,7 +22,7 @@ namespace CrossAggregateConstraints.Ports.Persistance.EventHandling
             _eventHandler = eventHandler;
         }
 
-        public EventStoreSubscription Start(IEventStoreConnection connection)
+        public EventStoreHandlingSubscription Start(IEventStoreConnection connection)
         {
             if (connection == null) throw new ArgumentNullException(nameof(connection));
 
@@ -34,7 +34,7 @@ namespace CrossAggregateConstraints.Ports.Persistance.EventHandling
                 resolveLinkTos: true,
                 eventAppeared: OnEventAppeared);
 
-            return new EventStoreSubscription(subscription, cts);
+            return new EventStoreHandlingSubscription(subscription, cts);
         }
 
         private void HandleEvents()

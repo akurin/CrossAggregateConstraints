@@ -32,7 +32,7 @@ namespace CrossAggregateConstraints.Tests.Ports.Constraints
                 };
             };
 
-            context["when index contains email associated with another user"] = () =>
+            context["email has been associated with another user"] = () =>
             {
                 before = () =>
                 {
@@ -40,7 +40,7 @@ namespace CrossAggregateConstraints.Tests.Ports.Constraints
                     _result = _sut.AddAsync(email, Guid.NewGuid()).Result;
                 };
 
-                it["returns EmailAccepted"] = () => _result.should_be(IndexResult.EmailRejected);
+                it["returns EmailRejected"] = () => _result.should_be(IndexResult.EmailRejected);
             };
         }
     }

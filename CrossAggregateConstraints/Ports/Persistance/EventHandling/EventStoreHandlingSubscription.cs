@@ -4,12 +4,12 @@ using EventStore.ClientAPI;
 
 namespace CrossAggregateConstraints.Ports.Persistance.EventHandling
 {
-    public class EventStoreSubscription
+    public class EventStoreHandlingSubscription
     {
         private readonly EventStoreCatchUpSubscription _subscription;
         private readonly CancellationTokenSource _cts;
 
-        public EventStoreSubscription(EventStoreCatchUpSubscription subscription, CancellationTokenSource cts)
+        public EventStoreHandlingSubscription(EventStoreCatchUpSubscription subscription, CancellationTokenSource cts)
         {
             if (subscription == null) throw new ArgumentNullException(nameof(subscription));
             if (cts == null) throw new ArgumentNullException(nameof(cts));

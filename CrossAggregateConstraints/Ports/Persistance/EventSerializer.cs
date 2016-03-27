@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Text;
-using CrossAggregateConstraints.Infrastructure.EventSourcing;
+using CrossAggregateConstraints.Domain;
 using EventStore.ClientAPI;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;

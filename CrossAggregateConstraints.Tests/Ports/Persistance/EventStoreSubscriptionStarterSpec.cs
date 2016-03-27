@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using CrossAggregateConstraints.Infrastructure.EventSourcing;
+using CrossAggregateConstraints.Domain;
 using CrossAggregateConstraints.Ports.Persistance;
 using CrossAggregateConstraints.Ports.Persistance.EventHandling;
 using EventStore.ClientAPI;
@@ -9,7 +9,6 @@ using EventStore.ClientAPI.Embedded;
 using EventStore.Core;
 using NSpec;
 using Optional;
-using EventStoreSubscription = CrossAggregateConstraints.Ports.Persistance.EventHandling.EventStoreSubscription;
 
 namespace CrossAggregateConstraints.Tests.Ports.Persistance
 {
@@ -20,7 +19,7 @@ namespace CrossAggregateConstraints.Tests.Ports.Persistance
         private EventSerializerStub _serializer;
         private EventHandlerMock _eventHandler;
         private EventStoreSubscriptionStarter _sut;
-        private EventStoreSubscription _subscription;
+        private EventStoreHandlingSubscription _subscription;
 
         private void before_each()
         {

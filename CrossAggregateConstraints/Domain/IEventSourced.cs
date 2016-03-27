@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace CrossAggregateConstraints.Infrastructure.EventSourcing
+namespace CrossAggregateConstraints.Domain
 {
     public interface IEventSourced
     {

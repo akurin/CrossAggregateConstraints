@@ -1,7 +1,6 @@
 ﻿using System;
 using CrossAggregateConstraints.Domain;
 using CrossAggregateConstraints.Domain.Events;
-using CrossAggregateConstraints.Infrastructure.EventSourcing;
 
 namespace CrossAggregateConstraints.Tests.Domain
 {

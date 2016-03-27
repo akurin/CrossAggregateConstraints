@@ -1,5 +1,4 @@
 using System;
-using CrossAggregateConstraints.Infrastructure.EventSourcing;
 
 namespace CrossAggregateConstraints.Domain.Events
 {
