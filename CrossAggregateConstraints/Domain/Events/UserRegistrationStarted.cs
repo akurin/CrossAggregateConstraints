@@ -4,9 +4,6 @@ namespace CrossAggregateConstraints.Domain.Events
 {
     public class UserRegistrationStarted : IEvent
     {
-        public Guid UserId { get; }
-        public UserRegistrationForm Form { get; }
-
         public UserRegistrationStarted(Guid userId, UserRegistrationForm form)
         {
             if (form == null) throw new ArgumentNullException(nameof(form));
@@ -14,5 +11,8 @@ namespace CrossAggregateConstraints.Domain.Events
             UserId = userId;
             Form = form;
         }
+
+        public Guid UserId { get; }
+        public UserRegistrationForm Form { get; }
     }
 }

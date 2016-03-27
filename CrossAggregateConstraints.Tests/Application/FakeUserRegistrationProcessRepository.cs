@@ -18,23 +18,23 @@ namespace CrossAggregateConstraints.Tests.Application
 
         public Task<SaveResult> SaveAsync(UserRegistrationProcess process)
         {
-            var streamId = StreamId(process.UserId);
+            var streamId = StreamBy(process.UserId);
             var result = _eventStoreStub.Save(
                 streamId,
-                process.GetEvents(),
+                process.GetPendingEvents(),
                 process.Version);
 
             return Task.FromResult(result);
         }
 
-        private static string StreamId(Guid userId)
+        private static string StreamBy(Guid userId)
         {
-            return "UserRegistrationProcess_" + userId;
+            return "userRegistrationProcess-" + userId;
         }
 
         public Task<Option<UserRegistrationProcess>> GetAsync(Guid userId)
         {
-            var streamId = StreamId(userId);
+            var streamId = StreamBy(userId);
             var events = _eventStoreStub.GetByStreamId(streamId);
             var result = new UserRegistrationProcess(events);
             return Task.FromResult(result.Some());

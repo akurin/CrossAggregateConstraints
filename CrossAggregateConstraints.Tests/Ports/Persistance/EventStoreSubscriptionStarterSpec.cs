@@ -19,7 +19,7 @@ namespace CrossAggregateConstraints.Tests.Ports.Persistance
         private EventSerializerStub _serializer;
         private EventHandlerMock _eventHandler;
         private EventStoreSubscriptionStarter _sut;
-        private EventStoreHandlingSubscription _subscription;
+        private EventHandlingSubscription _subscription;
 
         private void before_each()
         {

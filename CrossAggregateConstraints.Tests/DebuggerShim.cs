@@ -30,7 +30,7 @@ namespace CrossAggregateConstraints.Tests
         {
             var tagOrClassName = "";
 
-            var types = GetType().Assembly.GetTypes(); 
+            var types = GetType().Assembly.GetTypes();
             // OR
             // var types = new Type[]{typeof(Some_Type_Containg_some_Specs)};
             var finder = new SpecFinder(types, "");

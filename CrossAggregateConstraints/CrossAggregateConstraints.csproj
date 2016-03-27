@@ -73,7 +73,7 @@
     <Compile Include="Domain\UserRegistrationForm.cs" />
     <Compile Include="Domain\UserRegistrationProcessState.cs" />
     <Compile Include="Ports\Persistance\EventHandling\EventStoreSubscriptionStarter.cs" />
-    <Compile Include="Ports\Persistance\EventHandling\EventStoreHandlingSubscription.cs" />
+    <Compile Include="Ports\Persistance\EventHandling\EventHandlingSubscription.cs" />
     <Compile Include="Ports\Persistance\EventHandling\IEventHandler.cs" />
     <Compile Include="Ports\Persistance\EventSerializer.cs" />
     <Compile Include="Ports\Persistance\Repositories\EventStoreConnectionExtensions.cs" />

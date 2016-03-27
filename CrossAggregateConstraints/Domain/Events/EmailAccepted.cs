@@ -4,11 +4,11 @@ namespace CrossAggregateConstraints.Domain.Events
 {
     public class EmailAccepted : IEvent
     {
-        public Guid UserId { get; }
-
         public EmailAccepted(Guid userId)
         {
             UserId = userId;
         }
+
+        public Guid UserId { get; }
     }
 }

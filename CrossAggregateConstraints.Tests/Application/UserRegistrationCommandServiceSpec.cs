@@ -16,7 +16,7 @@ namespace CrossAggregateConstraints.Tests.Application
             var fakeEventStore = new FakeEventStore();
             var fakeUserRegistrationProcessRepository = new FakeUserRegistrationProcessRepository(fakeEventStore);
 
-            _sut = new UserRegistrationCommandService( fakeUserRegistrationProcessRepository);
+            _sut = new UserRegistrationCommandService(fakeUserRegistrationProcessRepository);
 
             _eventStore = fakeEventStore;
         }

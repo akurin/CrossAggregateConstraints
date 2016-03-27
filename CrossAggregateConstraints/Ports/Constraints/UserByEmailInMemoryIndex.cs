@@ -8,12 +8,13 @@ namespace CrossAggregateConstraints.Ports.Constraints
     public class UserByEmailInMemoryIndex : IUserByEmailIndex
     {
         private readonly Dictionary<string, Guid> _dic = new Dictionary<string, Guid>();
+        private readonly object _lockObject = new object();
 
         public Task<IndexResult> AddAsync(string email, Guid userId)
         {
             if (email == null) throw new ArgumentNullException(nameof(email));
 
-            lock (this)
+            lock (_lockObject)
             {
                 if (_dic.ContainsKey(email))
                 {

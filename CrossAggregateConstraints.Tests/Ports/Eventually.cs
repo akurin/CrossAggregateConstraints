@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Threading.Tasks;
 using NUnit.Framework;
 
 namespace CrossAggregateConstraints.Tests.Ports
@@ -20,7 +19,7 @@ namespace CrossAggregateConstraints.Tests.Ports
                 if (conditionResult)
                     return;
 
-                if (stopwatch.Elapsed > TimeSpan.FromSeconds(3000))
+                if (stopwatch.Elapsed > TimeSpan.FromMilliseconds(500))
                     Assert.Fail();
             }
         }

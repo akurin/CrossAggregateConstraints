@@ -22,7 +22,7 @@ namespace CrossAggregateConstraints.Ports.Persistance.EventHandling
             _eventHandler = eventHandler;
         }
 
-        public EventStoreHandlingSubscription Start(IEventStoreConnection connection)
+        public EventHandlingSubscription Start(IEventStoreConnection connection)
         {
             if (connection == null) throw new ArgumentNullException(nameof(connection));
 
@@ -34,7 +34,7 @@ namespace CrossAggregateConstraints.Ports.Persistance.EventHandling
                 resolveLinkTos: true,
                 eventAppeared: OnEventAppeared);
 
-            return new EventStoreHandlingSubscription(subscription, cts);
+            return new EventHandlingSubscription(subscription, cts);
         }
 
         private void HandleEvents()

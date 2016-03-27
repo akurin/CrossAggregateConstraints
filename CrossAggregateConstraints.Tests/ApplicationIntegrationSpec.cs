@@ -24,7 +24,7 @@ namespace CrossAggregateConstraints.Tests
         private IEventStoreConnection _connection;
         private UserRegistrationCommandService _commandService;
         private UserRegistrationQueryService _queryService;
-        private EventStoreHandlingSubscription _subscription;
+        private EventHandlingSubscription _subscription;
 
         private void before_each()
         {

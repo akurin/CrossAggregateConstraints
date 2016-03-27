@@ -25,7 +25,9 @@ namespace CrossAggregateConstraints.Ports.Persistance.Repositories
 
         public async Task<SaveResult> SaveAsync(User user)
         {
-            var eventsData = user.GetEvents().Select(_eventSerializer.ToEventData);
+            if (user == null) throw new ArgumentNullException(nameof(user));
+
+            var eventsData = user.GetPendingEvents().Select(_eventSerializer.ToEventData);
             try
             {
                 await _connection.AppendToStreamAsync(

@@ -15,7 +15,6 @@ namespace CrossAggregateConstraints.Tests.Ports.Persistance
     public class UserRepositoryTest : nspec
     {
         private IEventStoreConnection _connection;
-
         private ClusterVNode _node;
         private IUserRepository _sut;
         private Option<User> _result;

@@ -5,6 +5,6 @@ namespace CrossAggregateConstraints.Domain
     public interface IEventSourced
     {
         int Version { get; }
-        IEnumerable<IEvent> GetEvents();
+        IEnumerable<IEvent> GetPendingEvents();
     }
 }
