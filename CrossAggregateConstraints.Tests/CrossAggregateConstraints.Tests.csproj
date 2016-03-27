@@ -74,14 +74,22 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <Compile Include="AcceptanceTests.cs" />
+    <Compile Include="Application\UserByEmailIndexStub.cs" />
+    <Compile Include="Application\FakeEventStore.cs" />
+    <Compile Include="Application\UserRegistrationEventHandlerSpec.cs" />
+    <Compile Include="Application\UserRegistrationCommandServiceSpec.cs" />
+    <Compile Include="Application\FakeUserRegistrationProcessRepository.cs" />
+    <Compile Include="Domain\UserRegistrationProcessMother.cs" />
+    <Compile Include="Application\FakeUserRepository.cs" />
+    <Compile Include="Domain\UserRegistrationFormMother.cs" />
+    <Compile Include="ApplicationIntegrationSpec.cs" />
     <Compile Include="DebuggerShim.cs" />
-    <Compile Include="Ports\EventualAssertionExtensions.cs" />
-    <Compile Include="Ports\Constraints\InMemoryCrossAggregateConstraints.cs" />
-    <Compile Include="Ports\Persistance\EventDispatcherTest.cs" />
+    <Compile Include="Ports\Eventually.cs" />
+    <Compile Include="Ports\Constraints\UseryByEmailInMemoryIndexSpec.cs" />
+    <Compile Include="Ports\Persistance\EventStoreSubscriptionStarterSpec.cs" />
     <Compile Include="Ports\Persistance\UserRegistrationProcessRepositoryTest.cs" />
     <Compile Include="Ports\Persistance\UserRepositoryTest.cs" />
-    <Compile Include="Ports\Persistance\TestEventStore.cs" />
+    <Compile Include="Ports\Persistance\EmbeddedEventStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

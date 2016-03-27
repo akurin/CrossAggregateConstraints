@@ -2,7 +2,8 @@ namespace CrossAggregateConstraints.Domain
 {
     public enum UserRegistrationProcessState
     {
-        InProgress,
+        Created,
+        CreatingUser,
         Succeeded,
         Failed
     }

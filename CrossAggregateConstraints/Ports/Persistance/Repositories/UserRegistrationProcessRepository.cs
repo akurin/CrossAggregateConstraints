@@ -3,39 +3,47 @@ using System.Linq;
 using System.Threading.Tasks;
 using CrossAggregateConstraints.Domain;
 using EventStore.ClientAPI;
+using EventStore.ClientAPI.Exceptions;
 using Optional;
 using Optional.Unsafe;
 
 namespace CrossAggregateConstraints.Ports.Persistance.Repositories
 {
-    public sealed class UserRegistrationProcessRepository : IUserRegistrationProcessRepository
+    public class UserRegistrationProcessRepository : IUserRegistrationProcessRepository
     {
         private readonly IEventStoreConnection _connection;
         private readonly IEventSerializer _eventSerializer;
-        private readonly IUserRegistrationProcessFactory _userRegistrationProcessFactory;
 
         public UserRegistrationProcessRepository(
             IEventStoreConnection connection,
-            IEventSerializer eventSerializer,
-            IUserRegistrationProcessFactory userRegistrationProcessFactory)
+            IEventSerializer eventSerializer)
         {
             if (connection == null) throw new ArgumentNullException(nameof(connection));
             if (eventSerializer == null) throw new ArgumentNullException(nameof(eventSerializer));
-            if (userRegistrationProcessFactory == null)
-                throw new ArgumentNullException(nameof(userRegistrationProcessFactory));
 
             _connection = connection;
             _eventSerializer = eventSerializer;
-            _userRegistrationProcessFactory = userRegistrationProcessFactory;
         }
 
-        public Task SaveAsync(UserRegistrationProcess registrationProcess)
+        public async Task<SaveResult> SaveAsync(UserRegistrationProcess process)
         {
-            var eventsData = registrationProcess.GetEvents().Select(_eventSerializer.ToEventData);
-            return _connection.AppendToStreamAsync(
-                StreamBy(registrationProcess.UserId),
-                ExpectedVersion.Any,
-                eventsData);
+            var eventsData = process.GetEvents().Select(_eventSerializer.ToEventData);
+
+            try
+            {
+                await _connection.AppendToStreamAsync(
+                    StreamBy(process.UserId),
+                    process.Version == 0
+                        ? ExpectedVersion.NoStream
+                        : process.Version - 1,
+                    eventsData);
+
+                return SaveResult.Success;
+            }
+            catch (WrongExpectedVersionException)
+            {
+                return SaveResult.WrongExpextedVersion;
+            }
         }
 
         private static string StreamBy(Guid userId)
@@ -53,7 +61,7 @@ namespace CrossAggregateConstraints.Ports.Persistance.Repositories
                 .ToList();
 
             return events.Any()
-                ? _userRegistrationProcessFactory.Create(events).Some()
+                ? new UserRegistrationProcess(events).Some()
                 : Option.None<UserRegistrationProcess>();
         }
     }

@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using CrossAggregateConstraints.Infrastructure.EventSourcing;
 
-namespace CrossAggregateConstraints.Ports.Persistance.EventDispatching
+namespace CrossAggregateConstraints.Ports.Persistance.EventHandling
 {
     public interface IEventHandler
     {

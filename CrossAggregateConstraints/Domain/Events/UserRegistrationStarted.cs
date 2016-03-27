@@ -1,15 +1,17 @@
 ﻿using System;
 using CrossAggregateConstraints.Infrastructure.EventSourcing;
 
-namespace CrossAggregateConstraints.Domain
+namespace CrossAggregateConstraints.Domain.Events
 {
-    public class UserRegistrationProcessStarted : IEvent
+    public class UserRegistrationStarted : IEvent
     {
         public Guid UserId { get; }
         public UserRegistrationForm Form { get; }
 
-        public UserRegistrationProcessStarted(Guid userId, UserRegistrationForm form)
+        public UserRegistrationStarted(Guid userId, UserRegistrationForm form)
         {
+            if (form == null) throw new ArgumentNullException(nameof(form));
+
             UserId = userId;
             Form = form;
         }

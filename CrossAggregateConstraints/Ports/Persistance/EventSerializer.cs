@@ -8,7 +8,7 @@ using Optional;
 
 namespace CrossAggregateConstraints.Ports.Persistance
 {
-    public sealed class EventSerializer : IEventSerializer
+    public class EventSerializer : IEventSerializer
     {
         public EventData ToEventData(IEvent @event)
         {

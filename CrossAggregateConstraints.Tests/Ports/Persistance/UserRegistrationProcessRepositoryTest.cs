@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Threading.Tasks;
 using CrossAggregateConstraints.Domain;
 using CrossAggregateConstraints.Ports.Persistance;
 using CrossAggregateConstraints.Ports.Persistance.Repositories;
+using CrossAggregateConstraints.Tests.Domain;
 using EventStore.ClientAPI;
 using EventStore.ClientAPI.Embedded;
 using EventStore.Core;
@@ -12,17 +12,20 @@ using Optional.Unsafe;
 
 namespace CrossAggregateConstraints.Tests.Ports.Persistance
 {
-    public sealed class UserRegistrationProcessRepositoryTest : nspec
+    public class UserRegistrationProcessRepositoryTest : nspec
     {
+        private ClusterVNode _node;
+        private IEventStoreConnection _connection;
+        private UserRegistrationProcessRepository _sut;
+        private Option<UserRegistrationProcess> _result;
+
         private void before_each()
         {
-            _node = TestEventStore.StartEmbedded();
+            _node = EmbeddedEventStore.Start();
             _connection = EmbeddedEventStoreConnection.Create(_node);
             _connection.ConnectAsync().Wait();
 
-            var crossAggregateConstraints = new FakeCrossAggregateConstraints();
-            var userRegistrationProcessFactory = new UserRegistrationProcessFactory(crossAggregateConstraints);
-            _sut = new UserRegistrationProcessRepository(_connection, new EventSerializer(), userRegistrationProcessFactory);
+            _sut = new UserRegistrationProcessRepository(_connection, new EventSerializer());
         }
 
         private void after_each()
@@ -35,45 +38,24 @@ namespace CrossAggregateConstraints.Tests.Ports.Persistance
         {
             context["when user registration process is present in repository"] = () =>
             {
-                var presentProcess = new UserRegistrationProcess(
-                    new UserRegistrationForm("someone@example.com"),
-                    new FakeCrossAggregateConstraints());
-
-                var result = new Option<UserRegistrationProcess>();
+                var presentProcess = UserRegistrationProcessMother.InCreatedState(Guid.NewGuid());
 
                 before = () =>
                 {
                     _sut.SaveAsync(presentProcess).Wait();
-                    result = _sut.GetAsync(presentProcess.UserId).Result;
+                    _result = _sut.GetAsync(presentProcess.UserId).Result;
                 };
 
-                it["returns not none"] = () => result.HasValue.should_be_true();
-                it["returns correct user registration process"] = () =>
-                {
-                    result.ValueOrFailure().should_be(presentProcess.UserId);
-                    result.ValueOrFailure().RegistrationForm.Email.should_be(presentProcess.RegistrationForm.Email);
-                };
+                it["returns not none"] = () => _result.HasValue.should_be_true();
+                it["returns user registration process with correct UserId"] =
+                    () => { _result.ValueOrFailure().UserId.should_be(presentProcess.UserId); };
             };
 
             context["when user registration process is not present in repository"] = () =>
             {
-                var result = new Option<UserRegistrationProcess>();
-
-                before = () => result = _sut.GetAsync(Guid.NewGuid()).Result;
-                it["returns none"] = () => result.HasValue.should_be_false();
+                before = () => _result = _sut.GetAsync(Guid.NewGuid()).Result;
+                it["returns none"] = () => _result.HasValue.should_be_false();
             };
-        }
-
-        private ClusterVNode _node;
-        private IEventStoreConnection _connection;
-        private IUserRegistrationProcessRepository _sut;
-
-        private class FakeCrossAggregateConstraints : ICrossAggregateConstraints
-        {
-            public Task<bool> AddAsync(Guid userId, UserRegistrationForm registrationForm)
-            {
-                throw new NotImplementedException();
-            }
         }
     }
 }

@@ -3,36 +3,41 @@ using System.Linq;
 using System.Threading.Tasks;
 using CrossAggregateConstraints.Infrastructure.EventSourcing;
 using CrossAggregateConstraints.Ports.Persistance;
-using CrossAggregateConstraints.Ports.Persistance.EventDispatching;
+using CrossAggregateConstraints.Ports.Persistance.EventHandling;
 using EventStore.ClientAPI;
 using EventStore.ClientAPI.Embedded;
 using EventStore.Core;
 using NSpec;
 using Optional;
+using EventStoreSubscription = CrossAggregateConstraints.Ports.Persistance.EventHandling.EventStoreSubscription;
 
 namespace CrossAggregateConstraints.Tests.Ports.Persistance
 {
-    public class EventDispatcherTest : nspec
+    public class EventStoreSubscriptionStarterSpec : nspec
     {
-        private IEventStoreConnection _connection;
-
         private ClusterVNode _node;
+        private IEventStoreConnection _connection;
         private EventSerializerStub _serializer;
-        private EventDispatcher _sut;
-        private EventHandlerMock _eventHandlerMock;
-        private EventDispatcherSuscription _subscription;
+        private EventHandlerMock _eventHandler;
+        private EventStoreSubscriptionStarter _sut;
+        private EventStoreSubscription _subscription;
 
         private void before_each()
         {
-            _node = TestEventStore.StartEmbedded();
-            _connection = EmbeddedEventStoreConnection.Create(_node);
-            _connection.ConnectAsync().Wait();
+            var embeddedNode = EmbeddedEventStore.Start();
+            var embeddedConnection = EmbeddedEventStoreConnection.Create(embeddedNode);
+            embeddedConnection.ConnectAsync().Wait();
 
-            _serializer = new EventSerializerStub();
+            var eventSerializerStub = new EventSerializerStub();
 
-            _eventHandlerMock = new EventHandlerMock();
-            _sut = new EventDispatcher(new EventSerializerStub(), _eventHandlerMock);
-            _subscription = _sut.Start(_connection);
+            var eventHandlerMock = new EventHandlerMock();
+            var sut = new EventStoreSubscriptionStarter(new EventSerializerStub(), eventHandlerMock);
+
+            _node = embeddedNode;
+            _connection = embeddedConnection;
+            _serializer = eventSerializerStub;
+            _eventHandler = eventHandlerMock;
+            _sut = sut;
         }
 
         private void after_each()
@@ -42,7 +47,7 @@ namespace CrossAggregateConstraints.Tests.Ports.Persistance
             _node?.Stop();
         }
 
-        private void describe_A()
+        private void describe_Start()
         {
             context["when event has been added to EventStore"] = () =>
             {
@@ -51,12 +56,14 @@ namespace CrossAggregateConstraints.Tests.Ports.Persistance
                     var someEvent = new DummyEvent();
                     var eventData = _serializer.ToEventData(someEvent);
                     _connection.AppendToStreamAsync("dummy", ExpectedVersion.Any, eventData).Wait();
+
+                    _subscription = _sut.Start(_connection);
                 };
 
-                it["eventually calls event handler"] = () =>
-                {
-                    Eventually.IsTrue(() => _eventHandlerMock.WasCalledWithDummyEvent);
-                };
+                after = () => _subscription?.Stop();
+
+                it["eventually calls event handler"] =
+                    () => Eventually.IsTrue(() => _eventHandler.WasCalledWithDummyEvent);
             };
         }
 
@@ -81,7 +88,7 @@ namespace CrossAggregateConstraints.Tests.Ports.Persistance
                     WasCalledWithDummyEvent = true;
                 }
 
-                return Task.FromResult(0);
+                return Task.FromResult<object>(null);
             }
         }
 

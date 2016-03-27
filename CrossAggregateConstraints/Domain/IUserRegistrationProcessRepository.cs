@@ -6,7 +6,7 @@ namespace CrossAggregateConstraints.Domain
 {
     public interface IUserRegistrationProcessRepository
     {
-        Task SaveAsync(UserRegistrationProcess registrationProcess);
+        Task<SaveResult> SaveAsync(UserRegistrationProcess process);
         Task<Option<UserRegistrationProcess>> GetAsync(Guid userId);
     }
 }

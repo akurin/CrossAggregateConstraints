@@ -15,14 +15,13 @@ namespace CrossAggregateConstraints.Ports.Persistance.Repositories
             if (connection == null) throw new ArgumentNullException(nameof(connection));
 
             StreamEventsSlice slice;
-            var start = 0;
             var result = new List<ResolvedEvent>();
 
             do
             {
                 slice = await connection.ReadStreamEventsForwardAsync(
                     stream: stream,
-                    start: start,
+                    start: 0,
                     resolveLinkTos: false,
                     count: EventSliceLength);
 

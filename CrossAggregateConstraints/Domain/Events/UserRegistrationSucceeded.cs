@@ -1,13 +1,13 @@
 using System;
 using CrossAggregateConstraints.Infrastructure.EventSourcing;
 
-namespace CrossAggregateConstraints.Domain
+namespace CrossAggregateConstraints.Domain.Events
 {
-    public class UserRegistrationProcessSucceeded : IEvent
+    public class UserRegistrationSucceeded : IEvent
     {
         public Guid UserId { get; }
 
-        public UserRegistrationProcessSucceeded(Guid userId)
+        public UserRegistrationSucceeded(Guid userId)
         {
             UserId = userId;
         }

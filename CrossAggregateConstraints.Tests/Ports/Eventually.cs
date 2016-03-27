@@ -20,25 +20,7 @@ namespace CrossAggregateConstraints.Tests.Ports
                 if (conditionResult)
                     return;
 
-                if (stopwatch.Elapsed > TimeSpan.FromSeconds(3))
-                    Assert.Fail();
-            }
-        }
-
-        public static async Task IsTrueAsync(Func<Task<bool>> condition)
-        {
-            if (condition == null) throw new ArgumentNullException(nameof(condition));
-
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-
-            while (true)
-            {
-                var conditionResult = await condition();
-                if (conditionResult)
-                    return;
-
-                if (stopwatch.Elapsed > TimeSpan.FromSeconds(3))
+                if (stopwatch.Elapsed > TimeSpan.FromSeconds(3000))
                     Assert.Fail();
             }
         }

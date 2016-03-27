@@ -28,8 +28,7 @@ namespace CrossAggregateConstraints.Tests
         [Test]
         public void debug()
         {
-            var tagOrClassName = "EventDispatcherTest";
-            tagOrClassName = "";
+            var tagOrClassName = "";
 
             var types = GetType().Assembly.GetTypes(); 
             // OR

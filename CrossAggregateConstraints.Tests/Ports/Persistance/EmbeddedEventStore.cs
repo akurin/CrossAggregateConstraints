@@ -6,13 +6,15 @@ using EventStore.Core.Data;
 
 namespace CrossAggregateConstraints.Tests.Ports.Persistance
 {
-    public static class TestEventStore
+    public static class EmbeddedEventStore
     {
-        public static ClusterVNode StartEmbedded()
+        public static ClusterVNode Start()
         {
             var node = EmbeddedVNodeBuilder
                 .AsSingleNode()
                 .OnDefaultEndpoints()
+                .NoStatsOnPublicInterface()
+                .NoAdminOnPublicInterface()
                 .RunProjections(ProjectionsMode.All)
                 .Build();
 

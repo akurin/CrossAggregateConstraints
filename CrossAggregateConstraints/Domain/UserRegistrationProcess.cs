@@ -1,30 +1,26 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Linq;
+using CrossAggregateConstraints.Domain.Events;
 using CrossAggregateConstraints.Infrastructure.EventSourcing;
 
 namespace CrossAggregateConstraints.Domain
 {
-    public sealed class UserRegistrationProcess : IEventSourced
+    public class UserRegistrationProcess : IEventSourced
     {
-        private readonly ICrossAggregateConstraints _crossAggregateConstraints;
+        private UserRegistrationForm _registrationForm;
         private readonly ICollection<IEvent> _events = new List<IEvent>();
 
         public Guid UserId { get; private set; }
-        public UserRegistrationForm RegistrationForm { private set; get; }
-
         public UserRegistrationProcessState State { get; private set; }
+        public int Version { get; }
 
-        public UserRegistrationProcess(
-            UserRegistrationForm registrationForm,
-            ICrossAggregateConstraints crossAggregateConstraints)
+        public UserRegistrationProcess(UserRegistrationForm registrationForm)
         {
-            if (crossAggregateConstraints == null) throw new ArgumentNullException(nameof(crossAggregateConstraints));
-
-            _crossAggregateConstraints = crossAggregateConstraints;
+            if (registrationForm == null) throw new ArgumentNullException(nameof(registrationForm));
 
             var userId = Guid.NewGuid();
-            Apply(new UserRegistrationProcessStarted(userId, registrationForm));
+            Apply(new UserRegistrationStarted(userId, registrationForm));
         }
 
         private void Apply(IEvent @event)
@@ -35,46 +31,42 @@ namespace CrossAggregateConstraints.Domain
 
         private void Mutate(IEvent @event)
         {
-            When((dynamic) @event);
+            if (@event is UserRegistrationStarted)
+            {
+                var created = @event as UserRegistrationStarted;
+                UserId = created.UserId;
+                _registrationForm = created.Form;
+                State = UserRegistrationProcessState.Created;
+            }
+            else if (@event is EmailAccepted)
+            {
+                State = UserRegistrationProcessState.CreatingUser;
+            }
+            else if (@event is UserRegistrationSucceeded)
+            {
+                State = UserRegistrationProcessState.Succeeded;
+            }
+            else if (@event is UserRegistrationFailed)
+            {
+                State = UserRegistrationProcessState.Failed;
+            }
         }
 
-        private void When(CrossUserConstraintsAdded e)
-        {
-            
-        }
-
-        private void When(CrossUserConstraintsFailed e)
-        {
-            
-        }
-
-        private void When(UserRegistrationProcessStarted @event)
-        {
-            UserId = @event.UserId;
-            RegistrationForm = @event.Form;
-            State = UserRegistrationProcessState.InProgress;
-        }
-
-        private void When(UserRegistrationProcessSucceeded @event)
-        {
-            State = UserRegistrationProcessState.Succeeded;
-        }
-
-        private void When(UserRegistrationProcessFailed @event)
-        {
-            State = UserRegistrationProcessState.Failed;
-        }
-
-        public UserRegistrationProcess(IEnumerable<IEvent> events, ICrossAggregateConstraints crossAggregateConstraints)
+        public UserRegistrationProcess(IEnumerable<IEvent> events, bool saveToPending = false)
         {
             if (events == null) throw new ArgumentNullException(nameof(events));
-            if (crossAggregateConstraints == null) throw new ArgumentNullException(nameof(crossAggregateConstraints));
-
-            _crossAggregateConstraints = crossAggregateConstraints;
 
             foreach (var @event in events)
             {
-                Mutate(@event);
+                if (saveToPending)
+                {
+                    Apply(@event);
+                }
+                else
+                {
+                    Mutate(@event);
+                    Version++;
+                }
             }
         }
 
@@ -83,27 +75,51 @@ namespace CrossAggregateConstraints.Domain
             return _events;
         }
 
-        public async Task AddCrossUserConstraints()
+        public User CreateUser()
         {
-            var constraintsAdded = await _crossAggregateConstraints.AddAsync(UserId, RegistrationForm);
-            if (constraintsAdded)
+            return new User(UserId, _registrationForm);
+        }
+
+        public void HandleUserCreated()
+        {
+            switch (State)
             {
-                Apply(new CrossUserConstraintsAdded(UserId));
-            }
-            else
-            {
-                Apply(new CrossUserConstraintsFailed(UserId));
+                case UserRegistrationProcessState.CreatingUser:
+                    Apply(new UserRegistrationSucceeded(UserId));
+                    break;
+                case UserRegistrationProcessState.Succeeded:
+                    break;
+                default:
+                    throw new InvalidOperationException();
             }
         }
 
-        public void Succeed()
+        public void HandleEmailAccepted()
         {
-            Apply(new UserRegistrationProcessSucceeded(UserId));
+            switch (State)
+            {
+                case UserRegistrationProcessState.Created:
+                    Apply(new EmailAccepted(UserId));
+                    break;
+                case UserRegistrationProcessState.CreatingUser:
+                    break;
+                default:
+                    throw new InvalidOperationException();
+            }
         }
 
-        public void Fail()
+        public void HandleEmailRejected()
         {
-            Apply(new UserRegistrationProcessFailed(UserId));
+            switch (State)
+            {
+                case UserRegistrationProcessState.Created:
+                    Apply(new UserRegistrationFailed(UserId));
+                    break;
+                case UserRegistrationProcessState.Failed:
+                    break;
+                default:
+                    throw new InvalidOperationException();
+            }
         }
     }
 }
