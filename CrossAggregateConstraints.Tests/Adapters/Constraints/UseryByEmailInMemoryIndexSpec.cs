@@ -3,7 +3,7 @@ using CrossAggregateConstraints.Domain;
 using CrossAggregateConstraints.Ports.Constraints;
 using NSpec;
 
-namespace CrossAggregateConstraints.Tests.Ports.Constraints
+namespace CrossAggregateConstraints.Tests.Adapters.Constraints
 {
     public class UseryByEmailInMemoryIndexSpec : nspec
     {

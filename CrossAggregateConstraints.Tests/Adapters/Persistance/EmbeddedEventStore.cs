@@ -4,7 +4,7 @@ using EventStore.ClientAPI.Embedded;
 using EventStore.Core;
 using EventStore.Core.Data;
 
-namespace CrossAggregateConstraints.Tests.Ports.Persistance
+namespace CrossAggregateConstraints.Tests.Adapters.Persistance
 {
     public static class EmbeddedEventStore
     {

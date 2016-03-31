@@ -10,7 +10,7 @@ using NSpec;
 using Optional;
 using Optional.Unsafe;
 
-namespace CrossAggregateConstraints.Tests.Ports.Persistance
+namespace CrossAggregateConstraints.Tests.Adapters.Persistance
 {
     public class UserRegistrationProcessRepositoryTest : nspec
     {

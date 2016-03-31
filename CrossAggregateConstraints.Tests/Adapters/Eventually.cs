@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Threading.Tasks;
 using NUnit.Framework;
 
-namespace CrossAggregateConstraints.Tests.Ports
+namespace CrossAggregateConstraints.Tests.Adapters
 {
     public static class Eventually
     {

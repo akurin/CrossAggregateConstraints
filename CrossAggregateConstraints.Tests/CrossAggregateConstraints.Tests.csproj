@@ -4,7 +4,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{EB60DE17-7027-4ED3-AB09-468B0A1A4243}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>CrossAggregateConstraints.Tests</RootNamespace>
     <AssemblyName>CrossAggregateConstraints.Tests</AssemblyName>
@@ -37,6 +37,9 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="EventStore.ClientAPI, Version=3.0.2.0, Culture=neutral, processorArchitecture=MSIL">
@@ -83,13 +86,13 @@
     <Compile Include="Application\FakeUserRepository.cs" />
     <Compile Include="Domain\UserRegistrationFormMother.cs" />
     <Compile Include="ApplicationIntegrationSpec.cs" />
-    <Compile Include="DebuggerShim.cs" />
-    <Compile Include="Ports\Eventually.cs" />
-    <Compile Include="Ports\Constraints\UseryByEmailInMemoryIndexSpec.cs" />
-    <Compile Include="Ports\Persistance\EventStoreSubscriptionStarterSpec.cs" />
-    <Compile Include="Ports\Persistance\UserRegistrationProcessRepositoryTest.cs" />
-    <Compile Include="Ports\Persistance\UserRepositoryTest.cs" />
-    <Compile Include="Ports\Persistance\EmbeddedEventStore.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Adapters\Eventually.cs" />
+    <Compile Include="Adapters\Constraints\UseryByEmailInMemoryIndexSpec.cs" />
+    <Compile Include="Adapters\Persistance\EventStoreSubscriptionStarterSpec.cs" />
+    <Compile Include="Adapters\Persistance\UserRegistrationProcessRepositoryTest.cs" />
+    <Compile Include="Adapters\Persistance\UserRepositoryTest.cs" />
+    <Compile Include="Adapters\Persistance\EmbeddedEventStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -11,7 +11,7 @@ using NSpec;
 using Optional;
 using EventStoreSubscription = CrossAggregateConstraints.Ports.Persistance.EventHandling.EventStoreSubscription;
 
-namespace CrossAggregateConstraints.Tests.Ports.Persistance
+namespace CrossAggregateConstraints.Tests.Adapters.Persistance
 {
     public class EventStoreSubscriptionStarterSpec : nspec
     {
