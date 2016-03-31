@@ -40,7 +40,7 @@ namespace CrossAggregateConstraints.Tests.Application
                 _userId,
                 UserRegistrationFormMother.JohnDow());
 
-            context["when user registration process has been created"] = () =>
+            context["when user registration process is in Created state"] = () =>
             {
                 before = () =>
                 {
