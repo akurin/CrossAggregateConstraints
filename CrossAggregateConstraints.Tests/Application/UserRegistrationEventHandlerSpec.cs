@@ -89,7 +89,7 @@ namespace CrossAggregateConstraints.Tests.Application
 
         private void describe_HandleAsync_EmailAccepted()
         {
-            var EmailAccepted = new EmailAccepted(_userId);
+            var emailAccepted = new EmailAccepted(_userId);
 
             context["when user registration process is in CreatingUser state"] = () =>
             {
@@ -97,7 +97,7 @@ namespace CrossAggregateConstraints.Tests.Application
                 {
                     var process = UserRegistrationProcessMother.InCreatingUserState(_userId);
                     _userRegistrationProcessRepository.SaveAsync(process).Wait();
-                    _sut.HandleAsync(EmailAccepted).Wait();
+                    _sut.HandleAsync(emailAccepted).Wait();
                 };
 
                 it["saves UserCreated event"] =
@@ -105,7 +105,7 @@ namespace CrossAggregateConstraints.Tests.Application
 
                 it["is idempotent"] = () =>
                 {
-                    _sut.HandleAsync(EmailAccepted).Wait();
+                    _sut.HandleAsync(emailAccepted).Wait();
                     _eventStore.LastSavedEvents.should_be_empty();
                 };
             };
