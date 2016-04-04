@@ -80,20 +80,6 @@ namespace CrossAggregateConstraints.Domain
             return new User(UserId, _registrationForm);
         }
 
-        public void HandleUserCreated()
-        {
-            switch (State)
-            {
-                case UserRegistrationProcessState.CreatingUser:
-                    Apply(new UserRegistrationSucceeded(UserId));
-                    break;
-                case UserRegistrationProcessState.Succeeded:
-                    break;
-                default:
-                    throw new InvalidOperationException();
-            }
-        }
-
         public void HandleEmailAccepted()
         {
             switch (State)
@@ -102,6 +88,20 @@ namespace CrossAggregateConstraints.Domain
                     Apply(new EmailAccepted(UserId));
                     break;
                 case UserRegistrationProcessState.CreatingUser:
+                    break;
+                default:
+                    throw new InvalidOperationException();
+            }
+        }
+
+        public void HandleUserCreated()
+        {
+            switch (State)
+            {
+                case UserRegistrationProcessState.CreatingUser:
+                    Apply(new UserRegistrationSucceeded(UserId));
+                    break;
+                case UserRegistrationProcessState.Succeeded:
                     break;
                 default:
                     throw new InvalidOperationException();
