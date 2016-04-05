@@ -21,13 +21,13 @@ namespace CrossAggregateConstraints.Tests.Application
             if (user == null) throw new ArgumentNullException(nameof(user));
 
             var streamId = StreamId(user.Id);
-            var result = _eventStoreStub.Save(streamId, user.GetEvents(), user.Version);
+            var result = _eventStoreStub.Save(streamId, user.GetPendingEvents(), user.Version);
             return Task.FromResult(result);
         }
 
         private static string StreamId(Guid userId)
         {
-            return "user_" + userId;
+            return "user-" + userId;
         }
 
         public Task<Option<User>> GetAsync(Guid userId)

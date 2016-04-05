@@ -1,8 +1,8 @@
 using System;
 using System.Threading.Tasks;
 using CrossAggregateConstraints.Application.EventHandling;
+using CrossAggregateConstraints.Domain;
 using CrossAggregateConstraints.Domain.Events;
-using CrossAggregateConstraints.Infrastructure.EventSourcing;
 
 namespace CrossAggregateConstraints.Ports.Persistance.EventHandling
 {

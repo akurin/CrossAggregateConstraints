@@ -1,4 +1,4 @@
-﻿using CrossAggregateConstraints.Infrastructure.EventSourcing;
+﻿using CrossAggregateConstraints.Domain;
 using EventStore.ClientAPI;
 using Optional;
 

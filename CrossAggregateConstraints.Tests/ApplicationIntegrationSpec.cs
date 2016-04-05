@@ -24,7 +24,7 @@ namespace CrossAggregateConstraints.Tests
         private IEventStoreConnection _connection;
         private UserRegistrationCommandService _commandService;
         private UserRegistrationQueryService _queryService;
-        private CrossAggregateConstraints.Ports.Persistance.EventHandling.EventStoreSubscription _subscription;
+        private EventHandlingSubscription _subscription;
 
         private void before_each()
         {
@@ -37,7 +37,7 @@ namespace CrossAggregateConstraints.Tests
             var connection = EmbeddedEventStoreConnection.Create(node, connectionSettings);
             connection.ConnectAsync().Wait();
 
-            var inMemoryUserByEmailIndex = new UserByEmailInMemoryIndex();
+            var userByEmailInMemoryIndex = new UserByEmailInMemoryIndex();
 
             var eventSerializer = new EventSerializer();
             var userRegistrationProcessRepository = new UserRegistrationProcessRepository(connection, eventSerializer);
@@ -50,7 +50,7 @@ namespace CrossAggregateConstraints.Tests
             var userRegistrationEventHandler = new UserRegistrationEventHandler(
                 userRegistrationProcessRepository,
                 userRepository,
-                inMemoryUserByEmailIndex);
+                userByEmailInMemoryIndex);
 
             var userRegistrationEventHandlerAdapter = new UserRegistrationEventHandlerAdapter(userRegistrationEventHandler);
             var subscriptionStarter = new EventStoreSubscriptionStarter(eventSerializer, userRegistrationEventHandlerAdapter);

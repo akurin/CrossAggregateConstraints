@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using CrossAggregateConstraints.Domain.Events;
-using CrossAggregateConstraints.Infrastructure.EventSourcing;
 
 namespace CrossAggregateConstraints.Domain
 {
     public class User : IEventSourced
     {
         private readonly ICollection<IEvent> _events = new List<IEvent>();
-
-        public Guid Id { get; private set; }
-        public int Version { get; private set; }
 
         public User(IEnumerable<IEvent> events)
         {
@@ -22,6 +18,19 @@ namespace CrossAggregateConstraints.Domain
                 Version++;
             }
         }
+
+        private void Mutate(IEvent @event)
+        {
+            if (@event is UserCreated)
+            {
+                var created = @event as UserCreated;
+                Id = created.UserId;
+            }
+        }
+
+        public Guid Id { get; private set; }
+
+        public int Version { get; }
 
         public User(Guid id, UserRegistrationForm form)
         {
@@ -36,17 +45,7 @@ namespace CrossAggregateConstraints.Domain
             _events.Add(@event);
         }
 
-        private void Mutate(IEvent @event)
-        {
-            When((dynamic) @event);
-        }
-
-        private void When(UserCreated @event)
-        {
-            Id = @event.UserId;
-        }
-
-        public IEnumerable<IEvent> GetEvents()
+        public IEnumerable<IEvent> GetPendingEvents()
         {
             return _events;
         }

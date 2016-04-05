@@ -17,7 +17,9 @@ namespace CrossAggregateConstraints.Application.EventHandling
             IUserRepository userRepository,
             IUserByEmailIndex userByEmailIndex)
         {
-            if (userRegistrationProcessRepository == null) throw new ArgumentNullException(nameof(userRegistrationProcessRepository));
+            if (userRegistrationProcessRepository == null)
+                throw new ArgumentNullException(nameof(userRegistrationProcessRepository));
+
             if (userRepository == null) throw new ArgumentNullException(nameof(userRepository));
             if (userByEmailIndex == null) throw new ArgumentNullException(nameof(userByEmailIndex));
 
@@ -49,7 +51,8 @@ namespace CrossAggregateConstraints.Application.EventHandling
         private async Task<UserRegistrationProcess> GetProcessOrExceptionAsync(Guid userId)
         {
             var maybeProcess = await _userRegistrationProcessRepository.GetAsync(userId);
-            var errorMessage = $"Could not find user registration process for user {userId}. Repository seems to be corrupted.";
+            var errorMessage =
+                $"Could not find user registration process for user {userId}. Repository seems to be corrupted.";
             return maybeProcess.ValueOrFailure(errorMessage);
         }
 

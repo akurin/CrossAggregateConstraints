@@ -1,7 +1,6 @@
 ﻿using System;
 using CrossAggregateConstraints.Domain;
 using CrossAggregateConstraints.Domain.Events;
-using CrossAggregateConstraints.Infrastructure.EventSourcing;
 
 namespace CrossAggregateConstraints.Tests.Domain
 {
@@ -12,7 +11,7 @@ namespace CrossAggregateConstraints.Tests.Domain
             return new UserRegistrationProcess(new[]
             {
                 new UserRegistrationStarted(userId, UserRegistrationFormMother.JohnDow())
-            }, saveToPending: true);
+            }, addToPending: true);
         }
 
         public static UserRegistrationProcess InCreatingUserState(Guid userId)
@@ -21,7 +20,7 @@ namespace CrossAggregateConstraints.Tests.Domain
             {
                 new UserRegistrationStarted(userId, UserRegistrationFormMother.JohnDow()),
                 new EmailAccepted(userId)
-            }, saveToPending: true);
+            }, addToPending: true);
         }
     }
 }

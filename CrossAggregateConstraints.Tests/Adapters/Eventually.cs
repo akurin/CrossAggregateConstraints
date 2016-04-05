@@ -19,7 +19,7 @@ namespace CrossAggregateConstraints.Tests.Adapters
                 if (conditionResult)
                     return;
 
-                if (stopwatch.Elapsed > TimeSpan.FromSeconds(3000))
+                if (stopwatch.Elapsed > TimeSpan.FromMilliseconds(500))
                     Assert.Fail();
             }
         }

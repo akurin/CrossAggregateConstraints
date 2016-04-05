@@ -73,7 +73,7 @@
     <Compile Include="Domain\UserRegistrationForm.cs" />
     <Compile Include="Domain\UserRegistrationProcessState.cs" />
     <Compile Include="Ports\Persistance\EventHandling\EventStoreSubscriptionStarter.cs" />
-    <Compile Include="Ports\Persistance\EventHandling\EventStoreSubscription.cs" />
+    <Compile Include="Ports\Persistance\EventHandling\EventHandlingSubscription.cs" />
     <Compile Include="Ports\Persistance\EventHandling\IEventHandler.cs" />
     <Compile Include="Ports\Persistance\EventSerializer.cs" />
     <Compile Include="Ports\Persistance\Repositories\EventStoreConnectionExtensions.cs" />
@@ -82,8 +82,8 @@
     <Compile Include="Ports\Persistance\EventHandling\UserRegistrationEventHandlerAdapter.cs" />
     <Compile Include="Ports\Persistance\Repositories\UserRepository.cs" />
     <Compile Include="Ports\Constraints\UserByEmailInMemoryIndex.cs" />
-    <Compile Include="Infrastructure\EventSourcing\IEvent.cs" />
-    <Compile Include="Infrastructure\EventSourcing\IEventSourced.cs" />
+    <Compile Include="Domain\IEvent.cs" />
+    <Compile Include="Domain\IEventSourced.cs" />
     <Compile Include="Domain\User.cs" />
     <Compile Include="Domain\UserRegistrationProcess.cs" />
     <Compile Include="Domain\Events\UserRegistrationStarted.cs" />

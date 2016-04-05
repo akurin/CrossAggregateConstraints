@@ -27,7 +27,9 @@ namespace CrossAggregateConstraints.Ports.Persistance.Repositories
 
         public async Task<SaveResult> SaveAsync(UserRegistrationProcess process)
         {
-            var eventsData = process.GetEvents().Select(_eventSerializer.ToEventData);
+            if (process == null) throw new ArgumentNullException(nameof(process));
+
+            var eventsData = process.GetPendingEvents().Select(_eventSerializer.ToEventData);
 
             try
             {

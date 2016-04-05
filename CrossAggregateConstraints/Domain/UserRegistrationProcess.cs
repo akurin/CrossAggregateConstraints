@@ -1,26 +1,30 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using CrossAggregateConstraints.Domain.Events;
-using CrossAggregateConstraints.Infrastructure.EventSourcing;
 
 namespace CrossAggregateConstraints.Domain
 {
     public class UserRegistrationProcess : IEventSourced
     {
-        private UserRegistrationForm _registrationForm;
         private readonly ICollection<IEvent> _events = new List<IEvent>();
+        private UserRegistrationForm _registrationForm;
 
-        public Guid UserId { get; private set; }
-        public UserRegistrationProcessState State { get; private set; }
-        public int Version { get; }
-
-        public UserRegistrationProcess(UserRegistrationForm registrationForm)
+        public UserRegistrationProcess(IEnumerable<IEvent> events, bool addToPending = false)
         {
-            if (registrationForm == null) throw new ArgumentNullException(nameof(registrationForm));
+            if (events == null) throw new ArgumentNullException(nameof(events));
 
-            var userId = Guid.NewGuid();
-            Apply(new UserRegistrationStarted(userId, registrationForm));
+            foreach (var @event in events)
+            {
+                if (addToPending)
+                {
+                    Apply(@event);
+                }
+                else
+                {
+                    Mutate(@event);
+                    Version++;
+                }
+            }
         }
 
         private void Apply(IEvent @event)
@@ -52,25 +56,21 @@ namespace CrossAggregateConstraints.Domain
             }
         }
 
-        public UserRegistrationProcess(IEnumerable<IEvent> events, bool saveToPending = false)
-        {
-            if (events == null) throw new ArgumentNullException(nameof(events));
+        public int Version { get; }
 
-            foreach (var @event in events)
-            {
-                if (saveToPending)
-                {
-                    Apply(@event);
-                }
-                else
-                {
-                    Mutate(@event);
-                    Version++;
-                }
-            }
+        public Guid UserId { get; private set; }
+
+        public UserRegistrationProcessState State { get; private set; }
+
+        public UserRegistrationProcess(UserRegistrationForm registrationForm)
+        {
+            if (registrationForm == null) throw new ArgumentNullException(nameof(registrationForm));
+
+            var userId = Guid.NewGuid();
+            Apply(new UserRegistrationStarted(userId, registrationForm));
         }
 
-        public IEnumerable<IEvent> GetEvents()
+        public IEnumerable<IEvent> GetPendingEvents()
         {
             return _events;
         }
