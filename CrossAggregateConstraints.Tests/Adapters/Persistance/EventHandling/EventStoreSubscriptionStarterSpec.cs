@@ -10,7 +10,7 @@ using EventStore.Core;
 using NSpec;
 using Optional;
 
-namespace CrossAggregateConstraints.Tests.Adapters.Persistance
+namespace CrossAggregateConstraints.Tests.Adapters.Persistance.EventHandling
 {
     public class EventStoreSubscriptionStarterSpec : nspec
     {

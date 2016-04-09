@@ -65,6 +65,7 @@
     <Compile Include="Application\UserRegistration\UserRegistrationQueryService.cs" />
     <Compile Include="Application\UserRegistration\UserRegstrationProcessQueryResult.cs" />
     <Compile Include="Domain\Events\EmailAccepted.cs" />
+    <Compile Include="Domain\Events\UserIndexedByEmail.cs" />
     <Compile Include="Domain\IndexResult.cs" />
     <Compile Include="Domain\IUserByEmailIndex.cs" />
     <Compile Include="Domain\IUserRegistrationProcessRepository.cs" />
@@ -72,6 +73,7 @@
     <Compile Include="Domain\SaveResult.cs" />
     <Compile Include="Domain\UserRegistrationForm.cs" />
     <Compile Include="Domain\UserRegistrationProcessState.cs" />
+    <Compile Include="Ports\Persistance\Constraints\UserByEmailIndex.cs" />
     <Compile Include="Ports\Persistance\EventHandling\EventStoreSubscriptionStarter.cs" />
     <Compile Include="Ports\Persistance\EventHandling\EventHandlingSubscription.cs" />
     <Compile Include="Ports\Persistance\EventHandling\IEventHandler.cs" />
@@ -81,7 +83,6 @@
     <Compile Include="Ports\Persistance\IEventSerializer.cs" />
     <Compile Include="Ports\Persistance\EventHandling\UserRegistrationEventHandlerAdapter.cs" />
     <Compile Include="Ports\Persistance\Repositories\UserRepository.cs" />
-    <Compile Include="Ports\Constraints\UserByEmailInMemoryIndex.cs" />
     <Compile Include="Domain\IEvent.cs" />
     <Compile Include="Domain\IEventSourced.cs" />
     <Compile Include="Domain\User.cs" />

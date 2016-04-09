@@ -2,8 +2,8 @@
 using System.Linq;
 using CrossAggregateConstraints.Application.EventHandling;
 using CrossAggregateConstraints.Application.UserRegistration;
-using CrossAggregateConstraints.Ports.Constraints;
 using CrossAggregateConstraints.Ports.Persistance;
+using CrossAggregateConstraints.Ports.Persistance.Constraints;
 using CrossAggregateConstraints.Ports.Persistance.EventHandling;
 using CrossAggregateConstraints.Ports.Persistance.Repositories;
 using CrossAggregateConstraints.Tests.Adapters;
@@ -37,10 +37,9 @@ namespace CrossAggregateConstraints.Tests
             var connection = EmbeddedEventStoreConnection.Create(node, connectionSettings);
             connection.ConnectAsync().Wait();
 
-            var userByEmailInMemoryIndex = new UserByEmailInMemoryIndex();
-
             var eventSerializer = new EventSerializer();
             var userRegistrationProcessRepository = new UserRegistrationProcessRepository(connection, eventSerializer);
+            var userByEmailInMemoryIndex = new UserByEmailIndex(connection, eventSerializer);
 
             var commandService = new UserRegistrationCommandService(userRegistrationProcessRepository);
             var queryService = new UserRegistrationQueryService(userRegistrationProcessRepository);

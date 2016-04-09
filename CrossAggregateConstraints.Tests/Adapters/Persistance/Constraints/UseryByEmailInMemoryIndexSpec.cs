@@ -1,18 +1,34 @@
 ﻿using System;
 using CrossAggregateConstraints.Domain;
-using CrossAggregateConstraints.Ports.Constraints;
+using CrossAggregateConstraints.Ports.Persistance;
+using CrossAggregateConstraints.Ports.Persistance.Constraints;
+using EventStore.ClientAPI;
+using EventStore.ClientAPI.Embedded;
+using EventStore.Core;
 using NSpec;
 
-namespace CrossAggregateConstraints.Tests.Adapters.Constraints
+namespace CrossAggregateConstraints.Tests.Adapters.Persistance.Constraints
 {
     public class UseryByEmailInMemoryIndexSpec : nspec
     {
-        private UserByEmailInMemoryIndex _sut;
+        private IEventStoreConnection _connection;
+        private ClusterVNode _node;
         private IndexResult _result;
+        private UserByEmailIndex _sut;
 
         private void before_each()
         {
-            _sut = new UserByEmailInMemoryIndex();
+            _node = EmbeddedEventStore.Start();
+            _connection = EmbeddedEventStoreConnection.Create(_node);
+            _connection.ConnectAsync().Wait();
+
+            _sut = new UserByEmailIndex(_connection, new EventSerializer());
+        }
+
+        private void after_each()
+        {
+            _connection?.Close();
+            _node?.Stop();
         }
 
         private void describe_AddAsync()

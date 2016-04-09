@@ -10,9 +10,9 @@ using NSpec;
 using Optional;
 using Optional.Unsafe;
 
-namespace CrossAggregateConstraints.Tests.Adapters.Persistance
+namespace CrossAggregateConstraints.Tests.Adapters.Persistance.Repositories
 {
-    public class UserRegistrationProcessRepositoryTest : nspec
+    public class UserRegistrationProcessRepositorySpec : nspec
     {
         private ClusterVNode _node;
         private IEventStoreConnection _connection;
