@@ -38,7 +38,7 @@ namespace CrossAggregateValidation.Tests.Adapters.Persistance.Repositories
         {
             context["when user registration process is present in repository"] = () =>
             {
-                var presentProcess = UserRegistrationProcessMother.InCreatedState(Guid.NewGuid());
+                var presentProcess = UserRegistrationProcessMother.InRegistrationStartedState(Guid.NewGuid());
 
                 before = () =>
                 {

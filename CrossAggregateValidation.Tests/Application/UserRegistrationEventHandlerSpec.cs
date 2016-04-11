@@ -40,11 +40,11 @@ namespace CrossAggregateValidation.Tests.Application
                 _userId,
                 UserRegistrationFormMother.JohnDow());
 
-            context["when user registration process is in Created state"] = () =>
+            context["when user registration process is in RegistrationStarted state"] = () =>
             {
                 before = () =>
                 {
-                    var process = UserRegistrationProcessMother.InCreatedState(_userId);
+                    var process = UserRegistrationProcessMother.InRegistrationStartedState(_userId);
                     _userRegistrationProcessRepository.SaveAsync(process).Wait();
                 };
 

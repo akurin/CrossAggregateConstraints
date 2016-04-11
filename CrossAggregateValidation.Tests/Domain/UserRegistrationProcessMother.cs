@@ -6,7 +6,7 @@ namespace CrossAggregateValidation.Tests.Domain
 {
     public static class UserRegistrationProcessMother
     {
-        public static UserRegistrationProcess InCreatedState(Guid userId)
+        public static UserRegistrationProcess InRegistrationStartedState(Guid userId)
         {
             return new UserRegistrationProcess(new[]
             {

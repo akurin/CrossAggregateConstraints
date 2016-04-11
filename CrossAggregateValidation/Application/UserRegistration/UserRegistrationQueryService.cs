@@ -28,7 +28,7 @@ namespace CrossAggregateValidation.Application.UserRegistration
         {
             switch (state)
             {
-                case UserRegistrationProcessState.Created:
+                case UserRegistrationProcessState.RegistrationStarted:
                     return UserRegstrationProcessQueryResult.InProgress;
                 case UserRegistrationProcessState.CreatingUser:
                     return UserRegstrationProcessQueryResult.InProgress;

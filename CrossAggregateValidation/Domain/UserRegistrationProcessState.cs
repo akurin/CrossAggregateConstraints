@@ -2,7 +2,7 @@ namespace CrossAggregateValidation.Domain
 {
     public enum UserRegistrationProcessState
     {
-        Created,
+        RegistrationStarted,
         CreatingUser,
         Succeeded,
         Failed

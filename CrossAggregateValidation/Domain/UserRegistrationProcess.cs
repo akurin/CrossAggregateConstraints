@@ -40,7 +40,7 @@ namespace CrossAggregateValidation.Domain
                 var created = @event as UserRegistrationStarted;
                 UserId = created.UserId;
                 _registrationForm = created.Form;
-                State = UserRegistrationProcessState.Created;
+                State = UserRegistrationProcessState.RegistrationStarted;
             }
             else if (@event is EmailAccepted)
             {
@@ -84,7 +84,7 @@ namespace CrossAggregateValidation.Domain
         {
             switch (State)
             {
-                case UserRegistrationProcessState.Created:
+                case UserRegistrationProcessState.RegistrationStarted:
                     Apply(new EmailAccepted(UserId));
                     break;
                 case UserRegistrationProcessState.CreatingUser:
@@ -112,7 +112,7 @@ namespace CrossAggregateValidation.Domain
         {
             switch (State)
             {
-                case UserRegistrationProcessState.Created:
+                case UserRegistrationProcessState.RegistrationStarted:
                     Apply(new UserRegistrationFailed(UserId));
                     break;
                 case UserRegistrationProcessState.Failed:
