@@ -30,25 +30,25 @@ namespace CrossAggregateValidation.Tests
 
         private void before_each()
         {
-            var node = EmbeddedEventStore.Start();
+            var node = EmbeddedEventStore.StartAndWaitUntilReady();
 
             var connectionSettings = ConnectionSettings
                 .Create()
                 .SetDefaultUserCredentials(new UserCredentials("admin", "changeit"));
 
-            var connection = EmbeddedEventStoreConnection.Create(node, connectionSettings);
-            connection.ConnectAsync().Wait();
+            var embeddedConnection = EmbeddedEventStoreConnection.Create(node, connectionSettings);
+            embeddedConnection.ConnectAsync().Wait();
 
             var eventSerializer = JsonNetEventSerializer.CreateForAssembly(
                 typeof(CrossAggregateValidation.Domain.IEvent).Assembly);
 
-            var userRegistrationProcessRepository = new UserRegistrationProcessRepository(connection, eventSerializer);
-            var userByEmailInMemoryIndex = new UserByEmailIndex(connection, eventSerializer);
+            var userRegistrationProcessRepository = new UserRegistrationProcessRepository(embeddedConnection, eventSerializer);
+            var userByEmailInMemoryIndex = new UserByEmailIndex(embeddedConnection, eventSerializer);
 
             var commandService = new UserRegistrationCommandService(userRegistrationProcessRepository);
             var queryService = new UserRegistrationQueryService(userRegistrationProcessRepository);
 
-            var userRepository = new UserRepository(connection, eventSerializer);
+            var userRepository = new UserRepository(embeddedConnection, eventSerializer);
 
             var userRegistrationEventHandler = new UserRegistrationEventHandler(
                 userRegistrationProcessRepository,
@@ -57,15 +57,15 @@ namespace CrossAggregateValidation.Tests
 
             var userRegistrationEventHandlerAdapter = new UserRegistrationEventHandlerAdapter(userRegistrationEventHandler);
             var subscription = new SubscriptionStarter()
-                .WithConnection(connection)
-                .WithPositionStorage(new EventStorePositionStorage(connection, "position", new JsonPositionSerializer()))
+                .WithConnection(embeddedConnection)
+                .WithPositionStorage(new EventStorePositionStorage(embeddedConnection, "position", new JsonPositionSerializer()))
                 .WithEventSerializer(eventSerializer)
                 .WithEventHandler(userRegistrationEventHandlerAdapter)
                 .IgnoreSubscriptionDrop()
                 .StartAsync().Result;
 
             _node = node;
-            _connection = connection;
+            _connection = embeddedConnection;
             _commandService = commandService;
             _queryService = queryService;
             _subscription = subscription;

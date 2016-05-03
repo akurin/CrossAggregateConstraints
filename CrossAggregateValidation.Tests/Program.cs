@@ -18,8 +18,9 @@ namespace CrossAggregateValidation.Tests
             // OR
             // var types = new Type[]{typeof(Some_Type_Containg_some_Specs)};
             var finder = new SpecFinder(types, "");
-            var builder = new ContextBuilder(finder, new Tags().Parse(tagOrClassName), new DefaultConventions());
-            var runner = new ContextRunner(builder, new ConsoleFormatter(), failFast: true);
+            var tagsFilter = new Tags().Parse(tagOrClassName);
+            var builder = new ContextBuilder(finder, tagsFilter, new DefaultConventions());
+            var runner = new ContextRunner(tagsFilter, new ConsoleFormatter(), failFast: true);
             var results = runner.Run(builder.Contexts().Build());
 
             //assert that there aren't any failures

@@ -9,6 +9,7 @@ using CrossAggregateValidation.Adapters.Persistance.JsonNetEventSerialization;
 using CrossAggregateValidation.Domain;
 using EventStore.ClientAPI;
 using EventStore.ClientAPI.Embedded;
+using EventStore.ClientAPI.SystemData;
 using EventStore.Core;
 using NSpec;
 
@@ -21,8 +22,12 @@ namespace CrossAggregateValidation.Tests.Adapters.Persistance.EventHandling
 
         private void before_each()
         {
-            var embeddedNode = EmbeddedEventStore.Start();
-            var embeddedConnection = EmbeddedEventStoreConnection.Create(embeddedNode);
+            var embeddedNode = EmbeddedEventStore.StartAndWaitUntilReady();
+            var connectionSettings = ConnectionSettings
+                .Create()
+                .SetDefaultUserCredentials(new UserCredentials("admin", "changeit"));
+
+            var embeddedConnection = EmbeddedEventStoreConnection.Create(embeddedNode, connectionSettings);
             embeddedConnection.ConnectAsync().Wait();
 
             _node = embeddedNode;

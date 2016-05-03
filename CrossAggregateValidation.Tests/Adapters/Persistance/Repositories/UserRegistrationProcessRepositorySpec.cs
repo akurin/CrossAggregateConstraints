@@ -22,7 +22,7 @@ namespace CrossAggregateValidation.Tests.Adapters.Persistance.Repositories
 
         private void before_each()
         {
-            _node = EmbeddedEventStore.Start();
+            _node = EmbeddedEventStore.StartAndWaitUntilReady();
             _connection = EmbeddedEventStoreConnection.Create(_node);
             _connection.ConnectAsync().Wait();
 
