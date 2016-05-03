@@ -1,5 +1,6 @@
 ﻿using System;
 using CrossAggregateValidation.Adapters.Persistance;
+using CrossAggregateValidation.Adapters.Persistance.JsonNetEventSerialization;
 using CrossAggregateValidation.Adapters.Persistance.Repositories;
 using CrossAggregateValidation.Domain;
 using CrossAggregateValidation.Tests.Domain;
@@ -25,7 +26,8 @@ namespace CrossAggregateValidation.Tests.Adapters.Persistance.Repositories
             _connection = EmbeddedEventStoreConnection.Create(_node);
             _connection.ConnectAsync().Wait();
 
-            _sut = new UserRegistrationProcessRepository(_connection, new EventSerializer());
+            var eventSerializer = JsonNetEventSerializer.CreateForAssembly(typeof(IEvent).Assembly);
+            _sut = new UserRegistrationProcessRepository(_connection, eventSerializer);
         }
 
         private void after_each()

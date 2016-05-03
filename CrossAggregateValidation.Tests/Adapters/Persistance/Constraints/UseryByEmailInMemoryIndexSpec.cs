@@ -1,6 +1,7 @@
 ﻿using System;
 using CrossAggregateValidation.Adapters.Persistance;
 using CrossAggregateValidation.Adapters.Persistance.Constraints;
+using CrossAggregateValidation.Adapters.Persistance.JsonNetEventSerialization;
 using CrossAggregateValidation.Domain;
 using EventStore.ClientAPI;
 using EventStore.ClientAPI.Embedded;
@@ -22,7 +23,8 @@ namespace CrossAggregateValidation.Tests.Adapters.Persistance.Constraints
             _connection = EmbeddedEventStoreConnection.Create(_node);
             _connection.ConnectAsync().Wait();
 
-            _sut = new UserByEmailIndex(_connection, new EventSerializer());
+            var eventSerializer = JsonNetEventSerializer.CreateForAssembly(typeof(IEvent).Assembly);
+            _sut = new UserByEmailIndex(_connection, eventSerializer);
         }
 
         private void after_each()

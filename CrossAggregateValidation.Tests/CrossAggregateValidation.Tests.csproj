@@ -89,7 +89,7 @@
     <Compile Include="ApplicationIntegrationSpec.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Adapters\Eventually.cs" />
-    <Compile Include="Adapters\Persistance\EventHandling\EventStoreSubscriptionStarterSpec.cs" />
+    <Compile Include="Adapters\Persistance\EventHandling\EventHandlingSubscriptionStarterSpec.cs" />
     <Compile Include="Adapters\Persistance\Repositories\UserRegistrationProcessRepositorySpec.cs" />
     <Compile Include="Adapters\Persistance\Repositories\UserRepositorySpec.cs" />
     <Compile Include="Adapters\Persistance\EmbeddedEventStore.cs" />

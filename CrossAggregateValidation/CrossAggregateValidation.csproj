@@ -60,6 +60,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Adapters\Persistance\EventHandling\SubscriptionStarting\AwaitableQueue.cs" />
+    <Compile Include="Adapters\Persistance\EventHandling\IPositionSerializer.cs" />
+    <Compile Include="Adapters\Persistance\EventHandling\IPositionStorage.cs" />
+    <Compile Include="Adapters\Persistance\EventHandling\SubscriptionStarting\AppearedEventHandler.cs" />
+    <Compile Include="Adapters\Persistance\EventHandling\SubscriptionStarting\EventAppeared.cs" />
+    <Compile Include="Adapters\Persistance\EventHandling\SubscriptionStarting\MessageConsumer.cs" />
+    <Compile Include="Adapters\Persistance\EventHandling\SubscriptionStarting\SubscriptionStarter.cs" />
+    <Compile Include="Adapters\Persistance\EventHandling\EventStorePositionStorage.cs" />
+    <Compile Include="Adapters\Persistance\EventHandling\JsonPositionSerializer.cs" />
+    <Compile Include="Adapters\Persistance\EventHandling\SubscriptionStarting\SubscriptionDropped.cs" />
+    <Compile Include="Adapters\Persistance\JsonNetEventSerialization\IEventNamingStrategy.cs" />
+    <Compile Include="Adapters\Persistance\JsonNetEventSerialization\TypeFullNameEventNamingStrategy.cs" />
     <Compile Include="Application\EventHandling\UserRegistrationEventHandler.cs" />
     <Compile Include="Application\UserRegistration\UserRegistrationCommandService.cs" />
     <Compile Include="Application\UserRegistration\UserRegistrationQueryService.cs" />
@@ -75,10 +87,9 @@
     <Compile Include="Domain\UserRegistrationForm.cs" />
     <Compile Include="Domain\UserRegistrationProcessState.cs" />
     <Compile Include="Adapters\Persistance\Constraints\UserByEmailIndex.cs" />
-    <Compile Include="Adapters\Persistance\EventHandling\EventStoreSubscriptionStarter.cs" />
-    <Compile Include="Adapters\Persistance\EventHandling\EventHandlingSubscription.cs" />
+    <Compile Include="Adapters\Persistance\EventHandling\SubscriptionStarting\IMessage.cs" />
     <Compile Include="Adapters\Persistance\EventHandling\IEventHandler.cs" />
-    <Compile Include="Adapters\Persistance\EventSerializer.cs" />
+    <Compile Include="Adapters\Persistance\JsonNetEventSerialization\JsonNetEventSerializer.cs" />
     <Compile Include="Adapters\Persistance\Repositories\EventStoreConnectionExtensions.cs" />
     <Compile Include="Adapters\Persistance\Repositories\UserRegistrationProcessRepository.cs" />
     <Compile Include="Adapters\Persistance\IEventSerializer.cs" />

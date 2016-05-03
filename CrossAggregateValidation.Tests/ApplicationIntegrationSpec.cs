@@ -3,6 +3,8 @@ using System.Linq;
 using CrossAggregateValidation.Adapters.Persistance;
 using CrossAggregateValidation.Adapters.Persistance.Constraints;
 using CrossAggregateValidation.Adapters.Persistance.EventHandling;
+using CrossAggregateValidation.Adapters.Persistance.EventHandling.SubscriptionStarting;
+using CrossAggregateValidation.Adapters.Persistance.JsonNetEventSerialization;
 using CrossAggregateValidation.Adapters.Persistance.Repositories;
 using CrossAggregateValidation.Application.EventHandling;
 using CrossAggregateValidation.Application.UserRegistration;
@@ -24,7 +26,7 @@ namespace CrossAggregateValidation.Tests
         private IEventStoreConnection _connection;
         private UserRegistrationCommandService _commandService;
         private UserRegistrationQueryService _queryService;
-        private EventHandlingSubscription _subscription;
+        private EventStoreAllCatchUpSubscription _subscription;
 
         private void before_each()
         {
@@ -37,7 +39,9 @@ namespace CrossAggregateValidation.Tests
             var connection = EmbeddedEventStoreConnection.Create(node, connectionSettings);
             connection.ConnectAsync().Wait();
 
-            var eventSerializer = new EventSerializer();
+            var eventSerializer = JsonNetEventSerializer.CreateForAssembly(
+                typeof(CrossAggregateValidation.Domain.IEvent).Assembly);
+
             var userRegistrationProcessRepository = new UserRegistrationProcessRepository(connection, eventSerializer);
             var userByEmailInMemoryIndex = new UserByEmailIndex(connection, eventSerializer);
 
@@ -52,8 +56,13 @@ namespace CrossAggregateValidation.Tests
                 userByEmailInMemoryIndex);
 
             var userRegistrationEventHandlerAdapter = new UserRegistrationEventHandlerAdapter(userRegistrationEventHandler);
-            var subscriptionStarter = new EventStoreSubscriptionStarter(eventSerializer, userRegistrationEventHandlerAdapter);
-            var subscription = subscriptionStarter.Start(connection);
+            var subscription = new SubscriptionStarter()
+                .WithConnection(connection)
+                .WithPositionStorage(new EventStorePositionStorage(connection, "position", new JsonPositionSerializer()))
+                .WithEventSerializer(eventSerializer)
+                .WithEventHandler(userRegistrationEventHandlerAdapter)
+                .IgnoreSubscriptionDrop()
+                .StartAsync().Result;
 
             _node = node;
             _connection = connection;
