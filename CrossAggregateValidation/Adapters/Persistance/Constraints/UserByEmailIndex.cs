@@ -26,30 +26,31 @@ namespace CrossAggregateValidation.Adapters.Persistance.Constraints
 
         public async Task<IndexResult> AddAsync(string email, Guid userId)
         {
-            while (true)
+            var userByEmailAdded = new UserIndexedByEmail(userId);
+            var eventData = _eventSerializer.ToEventData(userByEmailAdded);
+
+            try
+            {
+                await _connection.AppendToStreamAsync(
+                    StreamBy(email),
+                    ExpectedVersion.EmptyStream,
+                    eventData);
+
+                return IndexResult.EmailAccepted;
+            }
+            catch (WrongExpectedVersionException)
             {
                 var maybeEvent = await ReadUserByEmailIndexedEventAsync(email);
-                if (maybeEvent.HasValue)
-                {
-                    return maybeEvent.ValueOrFailure().UserId == userId
+                return maybeEvent.Match(
+                    e => e.UserId == userId
                         ? IndexResult.EmailAccepted
-                        : IndexResult.EmailRejected;
-                }
-
-                try
-                {
-                    var userByEmailAdded = new UserIndexedByEmail(userId);
-                    var eventData = _eventSerializer.ToEventData(userByEmailAdded);
-                    await _connection.AppendToStreamAsync(
-                        StreamBy(email),
-                        ExpectedVersion.EmptyStream,
-                        eventData);
-
-                    return IndexResult.EmailAccepted;
-                }
-                catch (WrongExpectedVersionException)
-                {
-                }
+                        : IndexResult.EmailRejected,
+                    () =>
+                    {
+                        throw new Exception(
+                            "Unexpected EventStore behavior: append operation was rejected with " +
+                            "WrongExpectedVersionException, but the stream seems to be empty");
+                    });
             }
         }
 
@@ -71,7 +72,7 @@ namespace CrossAggregateValidation.Adapters.Persistance.Constraints
                     var @event = fromEventData.ValueOrFailure();
                     if (!(@event is UserIndexedByEmail))
                     {
-                        var message = $"Expected event of type {typeof (UserIndexedByEmail).FullName} " +
+                        var message = $"Expected event of type {typeof(UserIndexedByEmail).FullName} " +
                                       "but was '{@event.GetType().FullName}'";
                         throw new Exception(message);
                     }
