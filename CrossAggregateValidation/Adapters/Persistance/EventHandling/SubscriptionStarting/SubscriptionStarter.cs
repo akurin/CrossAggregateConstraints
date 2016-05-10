@@ -132,19 +132,19 @@ namespace CrossAggregateValidation.Adapters.Persistance.EventHandling.Subscripti
 
         private async Task<EventStoreAllCatchUpSubscription> StartAsync()
         {
-            var messageQueue = new AwaitableQueue<IMessage>();
+            var messageQueue = new AwaitableQueue();
             var appearedEventHandler = new AppearedEventHandler(_eventSerializer, messageQueue);
 
             var lastCheckpoint = await ReadLastCheckpointAsync();
 
             var subscription = _connection.SubscribeToAllFrom(
                 lastCheckpoint: lastCheckpoint,
-                resolveLinkTos: false,
+                settings: CatchUpSubscriptionSettings.Default,
                 eventAppeared: appearedEventHandler.Handle,
                 subscriptionDropped: (s, reason, ex) =>
                     messageQueue.Send(new SubscriptionDropped(reason, ex)));
 
-            var consumer = new MessageConsumer(
+            var consumer = new AsyncEventHandlerCaller(
                 messageQueue: messageQueue,
                 positionStorage: _positionStorage,
                 handleEventAsync: _handleEventAsync,
@@ -165,13 +165,13 @@ namespace CrossAggregateValidation.Adapters.Persistance.EventHandling.Subscripti
         }
 
         private static async void StartConsumerAsync(
-            MessageConsumer consumer,
-            AwaitableQueue<IMessage> messageQueue,
+            AsyncEventHandlerCaller eventHandlerCaller,
+            AwaitableQueue messageQueue,
             EventStoreCatchUpSubscription subscription)
         {
             try
             {
-                await consumer.WorkAsync();
+                await eventHandlerCaller.WorkAsync();
             }
             catch (Exception exception)
             {

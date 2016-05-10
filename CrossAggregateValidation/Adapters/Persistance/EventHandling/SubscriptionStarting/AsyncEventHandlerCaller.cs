@@ -5,16 +5,16 @@ using EventStore.ClientAPI;
 
 namespace CrossAggregateValidation.Adapters.Persistance.EventHandling.SubscriptionStarting
 {
-    internal class MessageConsumer
+    internal class AsyncEventHandlerCaller
     {
-        private readonly AwaitableQueue<IMessage> _messageQueue;
+        private readonly AwaitableQueue _messageQueue;
         private readonly Func<IEvent, Task> _handleEventAsync;
         private readonly IPositionStorage _positionStorage;
         private readonly Action<SubscriptionDropReason, Exception> _handleSubscriptionDrop;
-        private volatile bool _stopped;
+        private bool _stopped;
 
-        public MessageConsumer(
-            AwaitableQueue<IMessage> messageQueue,
+        public AsyncEventHandlerCaller(
+            AwaitableQueue messageQueue,
             IPositionStorage positionStorage,
             Func<IEvent, Task> handleEventAsync,
             Action<SubscriptionDropReason, Exception> handleSubscriptionDrop)
@@ -43,7 +43,7 @@ namespace CrossAggregateValidation.Adapters.Persistance.EventHandling.Subscripti
                     _handleSubscriptionDrop(subscriptionDropped.DropReason, subscriptionDropped.Exception);
                 }
                 else
-                    throw new InvalidOperationException();
+                    throw new InvalidOperationException($"Unexpected message {message.GetType()}");
             }
         }
     }

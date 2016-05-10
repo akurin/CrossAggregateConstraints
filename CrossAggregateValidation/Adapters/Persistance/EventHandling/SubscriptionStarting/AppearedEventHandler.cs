@@ -6,11 +6,11 @@ namespace CrossAggregateValidation.Adapters.Persistance.EventHandling.Subscripti
     internal class AppearedEventHandler
     {
         private readonly IEventSerializer _eventSerializer;
-        private readonly AwaitableQueue<IMessage> _messageQueue;
+        private readonly AwaitableQueue _messageQueue;
 
         public AppearedEventHandler(
             IEventSerializer eventSerializer,
-            AwaitableQueue<IMessage> messageQueue)
+            AwaitableQueue messageQueue)
         {
             if (eventSerializer == null) throw new ArgumentNullException(nameof(eventSerializer));
             if (messageQueue == null) throw new ArgumentNullException(nameof(messageQueue));

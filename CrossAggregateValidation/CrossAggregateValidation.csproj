@@ -65,7 +65,7 @@
     <Compile Include="Adapters\Persistance\EventHandling\IPositionStorage.cs" />
     <Compile Include="Adapters\Persistance\EventHandling\SubscriptionStarting\AppearedEventHandler.cs" />
     <Compile Include="Adapters\Persistance\EventHandling\SubscriptionStarting\EventAppeared.cs" />
-    <Compile Include="Adapters\Persistance\EventHandling\SubscriptionStarting\MessageConsumer.cs" />
+    <Compile Include="Adapters\Persistance\EventHandling\SubscriptionStarting\AsyncEventHandlerCaller.cs" />
     <Compile Include="Adapters\Persistance\EventHandling\SubscriptionStarting\SubscriptionStarter.cs" />
     <Compile Include="Adapters\Persistance\EventHandling\EventStorePositionStorage.cs" />
     <Compile Include="Adapters\Persistance\EventHandling\JsonPositionSerializer.cs" />
@@ -87,7 +87,6 @@
     <Compile Include="Domain\UserRegistrationForm.cs" />
     <Compile Include="Domain\UserRegistrationProcessState.cs" />
     <Compile Include="Adapters\Persistance\Constraints\UserByEmailIndex.cs" />
-    <Compile Include="Adapters\Persistance\EventHandling\SubscriptionStarting\IMessage.cs" />
     <Compile Include="Adapters\Persistance\EventHandling\IEventHandler.cs" />
     <Compile Include="Adapters\Persistance\JsonNetEventSerialization\JsonNetEventSerializer.cs" />
     <Compile Include="Adapters\Persistance\Repositories\EventStoreConnectionExtensions.cs" />

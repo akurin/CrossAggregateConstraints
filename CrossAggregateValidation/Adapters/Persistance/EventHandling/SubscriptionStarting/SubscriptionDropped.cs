@@ -3,7 +3,7 @@ using EventStore.ClientAPI;
 
 namespace CrossAggregateValidation.Adapters.Persistance.EventHandling.SubscriptionStarting
 {
-    internal class SubscriptionDropped : IMessage
+    internal class SubscriptionDropped
     {
         public SubscriptionDropped(SubscriptionDropReason dropReason, Exception exception)
         {

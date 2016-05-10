@@ -4,7 +4,7 @@ using EventStore.ClientAPI;
 
 namespace CrossAggregateValidation.Adapters.Persistance.EventHandling.SubscriptionStarting
 {
-    internal class EventAppeared : IMessage
+    internal class EventAppeared
     {
         public EventAppeared(Position position, IEvent @event)
         {

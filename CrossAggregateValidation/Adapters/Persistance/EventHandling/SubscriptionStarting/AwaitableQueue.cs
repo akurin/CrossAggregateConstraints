@@ -37,4 +37,8 @@ namespace CrossAggregateValidation.Adapters.Persistance.EventHandling.Subscripti
             }
         }
     }
+
+    internal class AwaitableQueue : AwaitableQueue<object>
+    {
+    }
 }
