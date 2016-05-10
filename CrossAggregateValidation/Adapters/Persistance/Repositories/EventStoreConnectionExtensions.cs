@@ -44,15 +44,9 @@ namespace CrossAggregateValidation.Adapters.Persistance.Repositories
 
             var resolvedEvents = slice.Events;
 
-            switch (resolvedEvents.Length)
-            {
-                case 0:
-                    return Optional.Option.None<ResolvedEvent>();
-                case 1:
-                    return resolvedEvents[0].Some();
-                default:
-                    throw new InvalidOperationException("TODO");
-            }
+            return resolvedEvents.Length == 0
+                ? Option.None<ResolvedEvent>()
+                : resolvedEvents[0].Some();
         }
     }
 }
