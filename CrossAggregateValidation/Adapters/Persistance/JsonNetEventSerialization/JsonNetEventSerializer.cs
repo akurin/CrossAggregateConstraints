@@ -4,7 +4,6 @@ using System.Text;
 using CrossAggregateValidation.Domain;
 using EventStore.ClientAPI;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using Optional;
 
 namespace CrossAggregateValidation.Adapters.Persistance.JsonNetEventSerialization
@@ -32,14 +31,6 @@ namespace CrossAggregateValidation.Adapters.Persistance.JsonNetEventSerializatio
 
             _eventNamingStrategy = eventNamingStrategy;
             _serializerSettings = serializerSettings;
-        }
-
-        private static JsonSerializerSettings DefaultSerializerSettings()
-        {
-            return new JsonSerializerSettings
-            {
-                ContractResolver = new CamelCasePropertyNamesContractResolver()
-            };
         }
 
         public EventData ToEventData(IEvent @event)
