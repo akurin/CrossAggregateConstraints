@@ -2,11 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CrossAggregateValidation.Adapters.Persistance;
-using CrossAggregateValidation.Adapters.Persistance.EventHandling;
-using CrossAggregateValidation.Adapters.Persistance.EventHandling.SubscriptionStarting;
-using CrossAggregateValidation.Adapters.Persistance.JsonNetEventSerialization;
 using CrossAggregateValidation.Domain;
+using ESUtils.PersistentSubscription;
 using EventStore.ClientAPI;
 using EventStore.ClientAPI.Embedded;
 using EventStore.ClientAPI.SystemData;
@@ -46,20 +43,18 @@ namespace CrossAggregateValidation.Tests.Adapters.Persistance.EventHandling
             {
                 var subscription = default(EventStoreAllCatchUpSubscription);
                 var eventHandler = new EventHandlerSpy();
-                var someEvent = SomeEvent.New();
+                var someEvent = CreateEventOfType("someType");
 
                 before = () =>
                 {
-                    subscription = new SubscriptionStarter()
+                    subscription = new PersistentSubscriptionStarter()
                         .WithConnection(_connection)
                         .WithPositionStorage(CreateEventStorePositionStorage())
-                        .WithEventSerializer(CreateEventSerializer())
-                        .WithEventHandler(eventHandler)
+                        .WithEventHandler(eventHandler.HandleAsync)
                         .IgnoreSubscriptionDrop()
                         .StartAsync().Result;
 
-                    var eventData = CreateEventSerializer().ToEventData(someEvent);
-                    _connection.AppendToStreamAsync("someStream", ExpectedVersion.Any, eventData).Wait();
+                    _connection.AppendToStreamAsync("someStream", ExpectedVersion.Any, someEvent).Wait();
                 };
 
                 after = () => subscription?.Stop();
@@ -67,8 +62,10 @@ namespace CrossAggregateValidation.Tests.Adapters.Persistance.EventHandling
                 it["eventually calls event handler"] =
                     () => Eventually.IsTrue(() =>
                     {
-                        var firstHandledEvent = eventHandler.HandledEvents.FirstOrDefault();
-                        return someEvent.Equals(firstHandledEvent);
+                        var userDefinedEvents = eventHandler.HandledUserDefinedEvents();
+                        return
+                            userDefinedEvents.Any() &&
+                            userDefinedEvents.First().Event.EventType == someEvent.Type;
                     });
             };
 
@@ -76,19 +73,18 @@ namespace CrossAggregateValidation.Tests.Adapters.Persistance.EventHandling
             {
                 var subscription = default(EventStoreAllCatchUpSubscription);
                 var eventHandler = new EventHandlerSpy();
-                var firstEvent = SomeEvent.New();
-                var secondEvent = SomeEvent.New();
+                var firstEvent = CreateEventOfType("firstEventType");
+                var secondEvent = CreateEventOfType("secondEventType");
 
                 before = () =>
                 {
                     AddEventsToSomeStream(firstEvent, secondEvent);
-                    WaitForHandlerThatFailsIfEventIsNotEqual(firstEvent);
+                    WaitForHandlerThatFailsIfEventTypeIsEqualTo(secondEvent.Type);
 
-                    subscription = new SubscriptionStarter()
+                    subscription = new PersistentSubscriptionStarter()
                         .WithConnection(_connection)
                         .WithPositionStorage(CreateEventStorePositionStorage())
-                        .WithEventSerializer(CreateEventSerializer())
-                        .WithEventHandler(eventHandler)
+                        .WithEventHandler(eventHandler.HandleAsync)
                         .IgnoreSubscriptionDrop()
                         .StartAsync().Result;
                 };
@@ -97,8 +93,11 @@ namespace CrossAggregateValidation.Tests.Adapters.Persistance.EventHandling
                 {
                     Eventually.IsTrue(() =>
                     {
-                        var firstHandledEvent = eventHandler.HandledEvents.FirstOrDefault();
-                        return secondEvent.Equals(firstHandledEvent);
+                        var eventType = eventHandler.HandledUserDefinedEvents()
+                            .Select(e => e.Event.EventType)
+                            .FirstOrDefault();
+
+                        return eventType == secondEvent.Type;
                     });
                 };
 
@@ -106,25 +105,19 @@ namespace CrossAggregateValidation.Tests.Adapters.Persistance.EventHandling
             };
         }
 
-        private static IEventSerializer CreateEventSerializer()
-        {
-            return JsonNetEventSerializer.CreateForAssembly(typeof(EventHandlingSubscriptionStarterSpec).Assembly);
-        }
-
-        private void WaitForHandlerThatFailsIfEventIsNotEqual(IEvent @event)
+        private void WaitForHandlerThatFailsIfEventTypeIsEqualTo(string eventType)
         {
             var tcs = new TaskCompletionSource<object>();
 
             EventStoreAllCatchUpSubscription subscription = null;
             try
             {
-                subscription = new SubscriptionStarter()
+                subscription = new PersistentSubscriptionStarter()
                     .WithConnection(_connection)
                     .WithPositionStorage(CreateEventStorePositionStorage())
-                    .WithEventSerializer(CreateEventSerializer())
                     .WithEventHandler(e =>
                     {
-                        if (!e.Equals(@event))
+                        if (e.Event.EventType == eventType)
                         {
                             tcs.SetResult(null);
                             throw new Exception("let's stop subscription!");
@@ -149,72 +142,47 @@ namespace CrossAggregateValidation.Tests.Adapters.Persistance.EventHandling
             return new EventStorePositionStorage(_connection, "position", new JsonPositionSerializer());
         }
 
-        private void AddEventsToSomeStream(params IEvent[] events)
+        private void AddEventsToSomeStream(params EventData[] eventsData)
         {
-            foreach (var @event in events)
-            {
-                var eventData = CreateEventSerializer().ToEventData(@event);
-                _connection.AppendToStreamAsync("someStream", ExpectedVersion.Any, eventData).Wait();
-            }
+            _connection.AppendToStreamAsync("someStream", ExpectedVersion.Any, eventsData).Wait();
         }
 
-        public class SomeEvent : IEvent
+        private static EventData CreateEventOfType(string type)
         {
-            public static SomeEvent New()
-            {
-                return new SomeEvent(Guid.NewGuid());
-            }
-
-            public SomeEvent(Guid id)
-            {
-                Id = id;
-            }
-
-            public Guid Id { get; private set; }
-
-            private bool Equals(SomeEvent other)
-            {
-                return Id.Equals(other.Id);
-            }
-
-            public override bool Equals(object obj)
-            {
-                if (ReferenceEquals(null, obj)) return false;
-                if (ReferenceEquals(this, obj)) return true;
-                if (obj.GetType() != this.GetType()) return false;
-                return Equals((SomeEvent) obj);
-            }
-
-            public override int GetHashCode()
-            {
-                return Id.GetHashCode();
-            }
+            return new EventData(
+                eventId: Guid.NewGuid(),
+                type: type,
+                isJson: false,
+                data: new byte[0],
+                metadata: new byte[0]);
         }
 
-        private class EventHandlerSpy : IEventHandler
+        private class EventHandlerSpy
         {
             private readonly object _lockObject = new object();
-            private readonly List<IEvent> _events = new List<IEvent>();
+            private readonly List<ResolvedEvent> _events = new List<ResolvedEvent>();
 
-            public Task HandleAsync(IEvent @event)
+            public Task HandleAsync(ResolvedEvent resolvedEvent)
             {
                 lock (_lockObject)
                 {
-                    _events.Add(@event);
+                    _events.Add(resolvedEvent);
                 }
 
                 return Task.FromResult<object>(null);
             }
 
-            public IEnumerable<IEvent> HandledEvents
+            public IEnumerable<ResolvedEvent> HandledUserDefinedEvents()
             {
-                get
+                lock (_lockObject)
                 {
-                    lock (_lockObject)
-                    {
-                        return _events.ToList();
-                    }
+                    return _events.Where(IsUserDefinedEvent).ToList();
                 }
+            }
+
+            private static bool IsUserDefinedEvent(ResolvedEvent resolvedEvent)
+            {
+                return !resolvedEvent.Event.EventType.StartsWith("$");
             }
         }
     }

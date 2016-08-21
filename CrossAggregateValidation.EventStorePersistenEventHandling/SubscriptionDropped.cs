@@ -1,7 +1,7 @@
 using System;
 using EventStore.ClientAPI;
 
-namespace CrossAggregateValidation.Adapters.Persistance.EventHandling.SubscriptionStarting
+namespace ESUtils.PersistentSubscription
 {
     internal class SubscriptionDropped
     {

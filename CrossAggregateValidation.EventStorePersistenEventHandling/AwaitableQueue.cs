@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace CrossAggregateValidation.Adapters.Persistance.EventHandling.SubscriptionStarting
+namespace ESUtils.PersistentSubscription
 {
     internal class AwaitableQueue<T>
     {

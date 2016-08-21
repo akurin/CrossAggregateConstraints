@@ -1,9 +1,9 @@
-﻿using EventStore.ClientAPI;
-using Optional;
-using System;
+﻿using System;
 using System.Threading.Tasks;
+using EventStore.ClientAPI;
+using Optional;
 
-namespace CrossAggregateValidation.Adapters.Persistance.EventHandling
+namespace ESUtils.PersistentSubscription
 {
     public class EventStorePositionStorage : IPositionStorage
     {

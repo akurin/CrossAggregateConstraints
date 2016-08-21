@@ -1,14 +1,13 @@
 using System;
 using System.Threading.Tasks;
-using CrossAggregateValidation.Domain;
 using EventStore.ClientAPI;
 
-namespace CrossAggregateValidation.Adapters.Persistance.EventHandling.SubscriptionStarting
+namespace ESUtils.PersistentSubscription
 {
     internal class AsyncEventHandlerCaller
     {
         private readonly AwaitableQueue _messageQueue;
-        private readonly Func<IEvent, Task> _handleEventAsync;
+        private readonly Func<ResolvedEvent, Task> _handleEventAsync;
         private readonly IPositionStorage _positionStorage;
         private readonly Action<SubscriptionDropReason, Exception> _handleSubscriptionDrop;
         private bool _stopped;
@@ -16,7 +15,7 @@ namespace CrossAggregateValidation.Adapters.Persistance.EventHandling.Subscripti
         public AsyncEventHandlerCaller(
             AwaitableQueue messageQueue,
             IPositionStorage positionStorage,
-            Func<IEvent, Task> handleEventAsync,
+            Func<ResolvedEvent, Task> handleEventAsync,
             Action<SubscriptionDropReason, Exception> handleSubscriptionDrop)
         {
             _messageQueue = messageQueue;
@@ -30,11 +29,15 @@ namespace CrossAggregateValidation.Adapters.Persistance.EventHandling.Subscripti
             while (!_stopped)
             {
                 var message = await _messageQueue.TakeAsync();
-                if (message is EventAppeared)
+                if (message is ResolvedEvent)
                 {
-                    var eventAppeared = message as EventAppeared;
-                    await _handleEventAsync(eventAppeared.Event);
-                    await _positionStorage.WriteAsync(eventAppeared.Position);
+                    var resolvedEvent = (ResolvedEvent) message;
+                    var originalPosition = resolvedEvent.OriginalPosition;
+                    if (originalPosition == null)
+                        continue;
+
+                    await _handleEventAsync(resolvedEvent);
+                    await _positionStorage.WriteAsync(originalPosition.Value);
                 }
                 else if (message is SubscriptionDropped)
                 {

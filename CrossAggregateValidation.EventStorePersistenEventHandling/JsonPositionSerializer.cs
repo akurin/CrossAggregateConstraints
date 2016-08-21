@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Optional;
 
-namespace CrossAggregateValidation.Adapters.Persistance.EventHandling
+namespace ESUtils.PersistentSubscription
 {
     public class JsonPositionSerializer : IPositionSerializer
     {

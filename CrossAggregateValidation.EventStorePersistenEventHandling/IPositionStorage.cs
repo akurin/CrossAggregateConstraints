@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using EventStore.ClientAPI;
 using Optional;
 
-namespace CrossAggregateValidation.Adapters.Persistance.EventHandling
+namespace ESUtils.PersistentSubscription
 {
     public interface IPositionStorage
     {

@@ -60,16 +60,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Adapters\Persistance\EventHandling\SubscriptionStarting\AwaitableQueue.cs" />
-    <Compile Include="Adapters\Persistance\EventHandling\IPositionSerializer.cs" />
-    <Compile Include="Adapters\Persistance\EventHandling\IPositionStorage.cs" />
-    <Compile Include="Adapters\Persistance\EventHandling\SubscriptionStarting\AppearedEventHandler.cs" />
-    <Compile Include="Adapters\Persistance\EventHandling\SubscriptionStarting\EventAppeared.cs" />
-    <Compile Include="Adapters\Persistance\EventHandling\SubscriptionStarting\AsyncEventHandlerCaller.cs" />
-    <Compile Include="Adapters\Persistance\EventHandling\SubscriptionStarting\SubscriptionStarter.cs" />
-    <Compile Include="Adapters\Persistance\EventHandling\EventStorePositionStorage.cs" />
-    <Compile Include="Adapters\Persistance\EventHandling\JsonPositionSerializer.cs" />
-    <Compile Include="Adapters\Persistance\EventHandling\SubscriptionStarting\SubscriptionDropped.cs" />
     <Compile Include="Adapters\Persistance\JsonNetEventSerialization\IEventNamingStrategy.cs" />
     <Compile Include="Adapters\Persistance\JsonNetEventSerialization\TypeFullNameEventNamingStrategy.cs" />
     <Compile Include="Application\EventHandling\UserRegistrationEventHandler.cs" />
@@ -87,7 +77,6 @@
     <Compile Include="Domain\UserRegistrationForm.cs" />
     <Compile Include="Domain\UserRegistrationProcessState.cs" />
     <Compile Include="Adapters\Persistance\Constraints\UserByEmailIndex.cs" />
-    <Compile Include="Adapters\Persistance\EventHandling\IEventHandler.cs" />
     <Compile Include="Adapters\Persistance\JsonNetEventSerialization\JsonNetEventSerializer.cs" />
     <Compile Include="Adapters\Persistance\Repositories\EventStoreConnectionExtensions.cs" />
     <Compile Include="Adapters\Persistance\Repositories\UserRegistrationProcessRepository.cs" />
@@ -107,7 +96,12 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\CrossAggregateValidation.EventStorePersistenEventHandling\ESUtils.PersistentSubscription.csproj">
+      <Project>{558D1C3E-4E0B-47BC-8A05-A3AF8E84C02F}</Project>
+      <Name>ESUtils.PersistentSubscription</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\EventStore.Client.Embedded.3.6.0\build\EventStore.Client.Embedded.targets" Condition="Exists('..\packages\EventStore.Client.Embedded.3.6.0\build\EventStore.Client.Embedded.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

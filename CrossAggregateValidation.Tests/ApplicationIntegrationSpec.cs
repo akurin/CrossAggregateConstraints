@@ -3,14 +3,15 @@ using System.Linq;
 using CrossAggregateValidation.Adapters.Persistance;
 using CrossAggregateValidation.Adapters.Persistance.Constraints;
 using CrossAggregateValidation.Adapters.Persistance.EventHandling;
-using CrossAggregateValidation.Adapters.Persistance.EventHandling.SubscriptionStarting;
 using CrossAggregateValidation.Adapters.Persistance.JsonNetEventSerialization;
 using CrossAggregateValidation.Adapters.Persistance.Repositories;
 using CrossAggregateValidation.Application.EventHandling;
 using CrossAggregateValidation.Application.UserRegistration;
+using CrossAggregateValidation.Domain;
 using CrossAggregateValidation.Tests.Adapters;
 using CrossAggregateValidation.Tests.Adapters.Persistance;
 using CrossAggregateValidation.Tests.Domain;
+using ESUtils.PersistentSubscription;
 using EventStore.ClientAPI;
 using EventStore.ClientAPI.Embedded;
 using EventStore.ClientAPI.SystemData;
@@ -55,12 +56,11 @@ namespace CrossAggregateValidation.Tests
                 userRepository,
                 userByEmailInMemoryIndex);
 
-            var userRegistrationEventHandlerAdapter = new UserRegistrationEventHandlerAdapter(userRegistrationEventHandler);
-            var subscription = new SubscriptionStarter()
+            var userRegistrationEventHandlerAdapter = new UserRegistrationEventHandlerAdapter(eventSerializer, userRegistrationEventHandler);
+            var subscription = new PersistentSubscriptionStarter()
                 .WithConnection(embeddedConnection)
                 .WithPositionStorage(new EventStorePositionStorage(embeddedConnection, "position", new JsonPositionSerializer()))
-                .WithEventSerializer(eventSerializer)
-                .WithEventHandler(userRegistrationEventHandlerAdapter)
+                .WithEventHandler(userRegistrationEventHandlerAdapter.HandleAsync)
                 .IgnoreSubscriptionDrop()
                 .StartAsync().Result;
 

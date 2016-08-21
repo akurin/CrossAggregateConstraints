@@ -1,7 +1,7 @@
 using EventStore.ClientAPI;
 using Optional;
 
-namespace CrossAggregateValidation.Adapters.Persistance.EventHandling
+namespace ESUtils.PersistentSubscription
 {
     public interface IPositionSerializer
     {

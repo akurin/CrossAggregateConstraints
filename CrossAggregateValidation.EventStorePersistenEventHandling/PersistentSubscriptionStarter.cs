@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Threading.Tasks;
-using CrossAggregateValidation.Domain;
 using EventStore.ClientAPI;
 using Optional;
 
-namespace CrossAggregateValidation.Adapters.Persistance.EventHandling.SubscriptionStarting
+namespace ESUtils.PersistentSubscription
 {
-    public class SubscriptionStarter
+    public class PersistentSubscriptionStarter
     {
         private IEventStoreConnection _connection;
         private IPositionStorage _positionStorage;
-        private IEventSerializer _eventSerializer;
-        private Func<IEvent, Task> _handleEventAsync;
+        private Func<ResolvedEvent, Task> _handleEventAsync;
         private Action<SubscriptionDropReason, Option<Exception>> _handleSubscriptionDrop;
 
         public SetPositionStorageStep WithConnection(IEventStoreConnection connection)
@@ -24,76 +22,49 @@ namespace CrossAggregateValidation.Adapters.Persistance.EventHandling.Subscripti
 
         public class SetPositionStorageStep
         {
-            private readonly SubscriptionStarter _starter;
+            private readonly PersistentSubscriptionStarter _starter;
 
-            internal SetPositionStorageStep(SubscriptionStarter starter)
+            internal SetPositionStorageStep(PersistentSubscriptionStarter starter)
             {
                 if (starter == null) throw new ArgumentNullException(nameof(starter));
 
                 _starter = starter;
             }
 
-            public SetEventSerializerStep WithPositionStorage(IPositionStorage positionStorage)
+            public SetEventHandlerStep WithPositionStorage(IPositionStorage positionStorage)
             {
                 if (positionStorage == null) throw new ArgumentNullException(nameof(positionStorage));
 
                 _starter._positionStorage = positionStorage;
-                return new SetEventSerializerStep(_starter);
-            }
-        }
-
-        public class SetEventSerializerStep
-        {
-            private readonly SubscriptionStarter _starter;
-
-            internal SetEventSerializerStep(SubscriptionStarter starter)
-            {
-                if (starter == null) throw new ArgumentNullException(nameof(starter));
-
-                _starter = starter;
-            }
-
-            public SetEventHandlerStep WithEventSerializer(IEventSerializer eventSerializer)
-            {
-                if (eventSerializer == null) throw new ArgumentNullException(nameof(eventSerializer));
-
-                _starter._eventSerializer = eventSerializer;
                 return new SetEventHandlerStep(_starter);
             }
         }
 
         public class SetEventHandlerStep
         {
-            private readonly SubscriptionStarter _starter;
+            private readonly PersistentSubscriptionStarter _starter;
 
-            internal SetEventHandlerStep(SubscriptionStarter starter)
+            internal SetEventHandlerStep(PersistentSubscriptionStarter starter)
             {
                 if (starter == null) throw new ArgumentNullException(nameof(starter));
 
                 _starter = starter;
             }
 
-            public SetSubscriptionDropHandlerStep WithEventHandler(Func<IEvent, Task> handleEventAsync)
+            public SetSubscriptionDropHandlerStep WithEventHandler(Func<ResolvedEvent, Task> handleEventAsync)
             {
                 if (handleEventAsync == null) throw new ArgumentNullException(nameof(handleEventAsync));
 
                 _starter._handleEventAsync = handleEventAsync;
                 return new SetSubscriptionDropHandlerStep(_starter);
             }
-
-            public SetSubscriptionDropHandlerStep WithEventHandler(IEventHandler eventHandler)
-            {
-                if (eventHandler == null) throw new ArgumentNullException(nameof(eventHandler));
-
-                return WithEventHandler(eventHandler.HandleAsync);
-            }
         }
 
         public class SetSubscriptionDropHandlerStep
         {
-            private readonly SubscriptionStarter _starter;
+            private readonly PersistentSubscriptionStarter _starter;
 
-            internal SetSubscriptionDropHandlerStep(SubscriptionStarter starter)
+            internal SetSubscriptionDropHandlerStep(PersistentSubscriptionStarter starter)
             {
                 if (starter == null) throw new ArgumentNullException(nameof(starter));
 
@@ -117,9 +88,9 @@ namespace CrossAggregateValidation.Adapters.Persistance.EventHandling.Subscripti
 
         public class BuildStep
         {
-            private readonly SubscriptionStarter _starter;
+            private readonly PersistentSubscriptionStarter _starter;
 
-            public BuildStep(SubscriptionStarter starter)
+            public BuildStep(PersistentSubscriptionStarter starter)
             {
                 _starter = starter;
             }
@@ -133,14 +104,13 @@ namespace CrossAggregateValidation.Adapters.Persistance.EventHandling.Subscripti
         private async Task<EventStoreAllCatchUpSubscription> StartAsync()
         {
             var messageQueue = new AwaitableQueue();
-            var appearedEventHandler = new AppearedEventHandler(_eventSerializer, messageQueue);
 
             var lastCheckpoint = await ReadLastCheckpointAsync();
 
             var subscription = _connection.SubscribeToAllFrom(
                 lastCheckpoint: lastCheckpoint,
                 settings: CatchUpSubscriptionSettings.Default,
-                eventAppeared: appearedEventHandler.Handle,
+                eventAppeared: (s, resolvedEvent) => messageQueue.Send(resolvedEvent),
                 subscriptionDropped: (s, reason, ex) =>
                     messageQueue.Send(new SubscriptionDropped(reason, ex)));
 

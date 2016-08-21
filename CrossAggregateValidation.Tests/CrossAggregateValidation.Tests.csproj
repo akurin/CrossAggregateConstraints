@@ -101,6 +101,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CrossAggregateValidation.EventStorePersistenEventHandling\ESUtils.PersistentSubscription.csproj">
+      <Project>{558D1C3E-4E0B-47BC-8A05-A3AF8E84C02F}</Project>
+      <Name>ESUtils.PersistentSubscription</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CrossAggregateValidation\CrossAggregateValidation.csproj">
       <Project>{70D37642-8554-4EFF-946A-B84B5E6CBE2D}</Project>
       <Name>CrossAggregateValidation</Name>

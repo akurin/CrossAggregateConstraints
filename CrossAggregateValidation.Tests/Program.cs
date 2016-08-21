@@ -12,7 +12,7 @@ namespace CrossAggregateValidation.Tests
         [Test]
         public static void Main()
         {
-            var tagOrClassName = "";
+            var tagOrClassName = "EventHandlingSubscriptionStarterSpec";
 
             var types = typeof(Program).Assembly.GetTypes(); 
             // OR
